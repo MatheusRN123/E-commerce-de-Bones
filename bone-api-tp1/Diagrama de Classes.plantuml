@@ -1,0 +1,150 @@
+@startuml
+!theme plain
+
+skinparam {
+  class {
+    BackgroundColor White
+    BorderColor Black
+    ArrowColor #007acc
+  }
+  note {
+    BackgroundColor #FFF9C4
+    BorderColor #FFC107
+  }
+}
+
+package "Sistema E-commerce de Bonés" {
+  abstract class Pessoa {
+    - cpf: String
+    - nome: String
+    - endereco: String
+    - telefone: String
+    + getDados(): String
+    + atualizarContato(): void
+  }
+
+  class Usuario {
+    <<abstract>>
+  }
+
+  class Administrador {
+    - email: String
+    - senha: String
+    - nivelAcesso: String
+    + gerenciarProdutos(): void
+    + gerenciarFornecedores(): void
+    + alterarNivelAcesso(): void
+    + visualizarRelatorios(): void
+  }
+
+  class Cliente {
+    - email: String
+    - senha: String
+    - dataCadastro: Date
+    + fazerPedido(): void
+    + adicionarAoCarrinho(): void
+  }
+
+  class Fornecedor {
+    - id: Integer
+    - nome: String
+    - cnpj: String
+    - contato: String
+    + verificarDisponibilidade(): Boolean
+  }
+
+  class Categoria {
+    - id: Integer
+    - nome: String
+    - descricao: String
+    + listarProdutos(): Produto
+  }
+
+  class Produto {
+    - id: Integer
+    - nome: String
+    - descricao: String
+    - preco: Double
+    - estoque: Integer
+    - material: String
+    - tamanho: String
+    - cores: String
+    + verificarEstoque(): Boolean
+  }
+
+  class Pedido {
+    - id: Integer
+    - data: Date
+    - status: String
+    - idCliente: Integer
+    - valorTotal: Double
+    + calcularTotal(): Double
+  }
+
+  class Pagamento {
+    - id: Integer
+    - tipo: String
+    - valor: Double
+    - data: Date
+    - status: String
+    + processarPagamento(): Boolean
+    + gerarComprovante(): void
+    + estornarPagamento(): void
+  }
+
+  class ItemPedido {
+    - idPedido: Integer
+    - idProduto: Integer
+    - quantidade: Integer
+    - precoUnitario: Double
+    - desconto: Double
+    + aplicarDesconto(): void
+  }
+
+  ' Heranças
+  Pessoa <|-- Usuario
+  Usuario <|-- Administrador
+  Usuario <|-- Cliente
+
+  ' Relacionamentos 1-N
+  Fornecedor "1" -- "*" Produto : fornece >
+  Cliente "1" -- "*" Pedido : realiza >
+  Categoria "1" -- "*" Produto : classifica >
+
+  ' Relacionamento 1-1 (composição)
+  Pedido "1" *-- "1" Pagamento : contém >
+
+  ' Relacionamentos N-N através da classe associativa
+  Pedido "1" -- "*" ItemPedido
+  ItemPedido "*" -- "1" Produto
+
+  ' Relacionamentos de gestão (associações)
+  Administrador -- Produto : gerencia >
+  Administrador -- Fornecedor : gerencia >
+
+  ' Notas explicativas
+  note top of Pagamento
+    **Composição**: Se o pedido for
+    excluído, o pagamento também será
+  end note
+
+  note right of Categoria
+    **Agregação**: Produtos podem
+    existir sem categoria
+  end note
+
+  note right of ItemPedido
+    **Tabela associativa** para
+    relacionamento N-N entre
+    Pedido e Produto
+  end note
+
+  note right of Produto
+    **Atributos específicos para bonés**:
+    - material 
+    - tamanho
+    - cores disponíveis
+  end note
+}
+
+@enduml
