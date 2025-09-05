@@ -1,2 +1,2 @@
-# E-commerce-de-Bonés
+# E-commerce-de-Bones
 Trabalho de tópicos I do terceiro período de Sistemas de Informação (Universidade Estadual do Tocantins)
