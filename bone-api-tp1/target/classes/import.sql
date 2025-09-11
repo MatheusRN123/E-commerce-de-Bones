@@ -1,3 +1,3 @@
-insert into aluno(nome) values('Joao');
-insert into aluno(nome) values('Maria');
-insert into aluno(nome) values('Pedro');
+insert into administrador(cpf, nome, endereco, telefone, email, senha, nivelAcesso) values('123-312-412-51','Joao', 'Rua 5', '(99)95123-1424', 'Joao@gmail.com', '123456', 'Total');
+insert into administrador(cpf, nome, endereco, telefone, email, senha, nivelAcesso) values('173-612-511-53','Pedro', 'Rua 61', '(63)95163-1216', 'Pedro@gmail.com', '123456', 'Total');
+insert into administrador(cpf, nome, endereco, telefone, email, senha, nivelAcesso) values('181-352-662-26','Maria', 'Rua 1', '(78)95226-1424', 'Maria@gmail.com', '123456', 'Total');
