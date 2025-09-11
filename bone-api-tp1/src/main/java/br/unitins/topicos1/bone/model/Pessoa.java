@@ -6,7 +6,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 
 @MappedSuperclass
-public abstract class Cliente {
+public abstract class Pessoa {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,8 +16,6 @@ public abstract class Cliente {
     private String nome;
     private String endereco;
     private String telefone;
-    private String email;
-    private String senha;
 
     
     public Long getId() {
@@ -64,21 +62,4 @@ public abstract class Cliente {
         this.telefone = telefone;
     }
 
-
-    public String getEmail(){
-        return email;
-    }
-
-    public void setEmail(String email){
-        this.email = email;
-    }
-
-
-    public String getSenha(){
-        return senha;
-    }
-
-    public void setSenha(String senha){
-        this.senha = senha;
-    }
 }
