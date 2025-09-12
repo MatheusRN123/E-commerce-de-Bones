@@ -43,7 +43,13 @@ public class AdministradorResource {
     public Administrador incluirAdministrador(Administrador administrador){
 
         Administrador novoAdmin = new Administrador();
+        novoAdmin.setCpf(administrador.getCpf());
         novoAdmin.setNome(administrador.getNome());
+        novoAdmin.setEndereco(administrador.getEndereco());
+        novoAdmin.setTelefone(administrador.getTelefone());
+        novoAdmin.setEmail(administrador.getEmail());
+        novoAdmin.setSenha(administrador.getSenha());
+        novoAdmin.setNivelAcesso(administrador.getNivelAcesso());
 
         repository.persist(novoAdmin);
 
