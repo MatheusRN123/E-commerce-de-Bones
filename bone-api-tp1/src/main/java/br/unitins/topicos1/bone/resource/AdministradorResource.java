@@ -60,7 +60,7 @@ public class AdministradorResource {
     @PUT
     @Path("/{id}")
     @Transactional
-    public void alterarAluno(Long id, Administrador administrador){
+    public void alterarAdministrador(Long id, Administrador administrador){
 
         Administrador edicaoAdministrador = repository.findById(id);
 
