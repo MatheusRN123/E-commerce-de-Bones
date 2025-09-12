@@ -10,7 +10,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 public class AdministradorRepository implements PanacheRepository<Administrador> {
     
     public List<Administrador> findByNome(String nome){
-        return find("SELECT a FROM Administrador a WHERE a.nome LIKE ?1", "%" + nome + "%").list();
+        return find("SELECT * FROM Administrador a WHERE a.nome LIKE ?1", "%" + nome + "%").list();
     }
 
 }
