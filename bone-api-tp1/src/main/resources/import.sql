@@ -1,3 +1,8 @@
-insert into administrador(cpf, nome, endereco, telefone, email, senha, nivelAcesso) values('123-312-412-51','Joao', 'Rua 5', '(99)95123-1424', 'Joao@gmail.com', '123456', 'Total');
-insert into administrador(cpf, nome, endereco, telefone, email, senha, nivelAcesso) values('173-612-511-53','Pedro', 'Rua 61', '(63)95163-1216', 'Pedro@gmail.com', '123456', 'Total');
-insert into administrador(cpf, nome, endereco, telefone, email, senha, nivelAcesso) values('181-352-662-26','Maria', 'Rua 1', '(78)95226-1424', 'Maria@gmail.com', '123456', 'Total');
+insert into material(nome) 
+values('Algodão'), ('Couro');
+
+
+insert into bone(nome, cor, categoriaAba, tamanhoAba, profundidade, circunferência, bordado, id_material) 
+values
+('Boné Challenge MVCK', 'Verde e Vermelho', 'Curva', 7, 15, '51-63.5', 'COM_BORDADO' , 1),
+('Boné Madrid Trucker MVCK', 'Marrom', 'Curva', 7, 16.5, '56-62', 'PERSONALIZADO' , 2);
