@@ -3,6 +3,7 @@ package br.unitins.topicos1.bone.service;
 import java.util.List;
 
 import br.unitins.topicos1.bone.dto.BoneDTO;
+import br.unitins.topicos1.bone.dto.BoneDTOResponse;
 import br.unitins.topicos1.bone.model.Bone;
 import br.unitins.topicos1.bone.model.Material;
 import br.unitins.topicos1.bone.repository.BoneRepository;
@@ -21,23 +22,31 @@ public class BoneServiceImpl implements BoneService {
     MaterialRepository repositoryMaterial;
 
     @Override
-    public List<Bone> findAll() {
-        return repository.listAll();
+    public List<BoneDTOResponse> findAll() {
+        return repository
+                    .listAll()
+                    .stream()
+                    .map(m -> BoneDTOResponse.valueOf(m))
+                    .toList();
     }
 
     @Override
-    public List<Bone> findByNome(String nome) {
-        return repository.findByNome(nome);
+    public List<BoneDTOResponse> findByNome(String nome) {
+        return repository
+                    .findByNome(nome)
+                    .stream()
+                    .map(m -> BoneDTOResponse.valueOf(m))
+                    .toList();
     }
 
     @Override
-    public Bone findById(Long id) {
-        return repository.findById(id);
+    public BoneDTOResponse findById(Long id) {
+        return BoneDTOResponse.valueOf(repository.findById(id));
     }
 
     @Override
     @Transactional
-    public Bone create(BoneDTO dto) {
+    public BoneDTOResponse create(BoneDTO dto) {
 
         Bone bone = new Bone();
         bone.setNome(dto.nome());
@@ -53,7 +62,7 @@ public class BoneServiceImpl implements BoneService {
 
         repository.persist(bone);
 
-        return bone;
+        return BoneDTOResponse.valueOf(bone);
     }
 
     @Override

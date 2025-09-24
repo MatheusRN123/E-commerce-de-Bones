@@ -3,7 +3,7 @@ package br.unitins.topicos1.bone.resource;
 import java.util.List;
 
 import br.unitins.topicos1.bone.dto.MaterialDTO;
-import br.unitins.topicos1.bone.model.Material;
+import br.unitins.topicos1.bone.dto.MaterialDTOResponse;
 import br.unitins.topicos1.bone.service.MaterialService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -24,30 +24,30 @@ public class MaterialResource {
     MaterialService service;
 
     @GET
-    public List<Material> buscarTodos() {
+    public List<MaterialDTOResponse> buscarTodos() {
         return service.findAll();
     }
 
     @GET
     @Path("/find/{nome}")
-    public List<Material> buscarPorNome(String nome) {
+    public List<MaterialDTOResponse> buscarPorNome(String nome) {
         return service.findByNome(nome);
     }
 
     @POST
-    public Material incluir(MaterialDTO dto) {
+    public MaterialDTOResponse incluirMaterial(MaterialDTO dto) {
         return service.create(dto);
     }
 
     @PUT
     @Path("/{id}")
-    public void alterar(Long id, MaterialDTO dto) {
+    public void alterarMaterial(Long id, MaterialDTO dto) {
         service.update(id, dto);
     }
 
     @DELETE
     @Path("/{id}")
-    public void apagar(Long id) {
+    public void apagarMaterial(Long id) {
         service.delete(id);
     }
 }

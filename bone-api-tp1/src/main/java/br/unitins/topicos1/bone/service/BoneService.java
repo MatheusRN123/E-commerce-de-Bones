@@ -3,13 +3,13 @@ package br.unitins.topicos1.bone.service;
 import java.util.List;
 
 import br.unitins.topicos1.bone.dto.BoneDTO;
-import br.unitins.topicos1.bone.model.Bone;
+import br.unitins.topicos1.bone.dto.BoneDTOResponse;
 
 public interface BoneService {
-    List<Bone> findAll();
-    List<Bone> findByNome(String nome);
-    Bone findById(Long id);
-    Bone create(BoneDTO dto);
+    List<BoneDTOResponse> findAll();
+    List<BoneDTOResponse> findByNome(String nome);
+    BoneDTOResponse findById(Long id);
+    BoneDTOResponse create(BoneDTO dto);
     void update(Long id, BoneDTO dto);
     void delete(Long id);
 }

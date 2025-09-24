@@ -3,6 +3,7 @@ package br.unitins.topicos1.bone.service;
 import java.util.List;
 
 import br.unitins.topicos1.bone.dto.MaterialDTO;
+import br.unitins.topicos1.bone.dto.MaterialDTOResponse;
 import br.unitins.topicos1.bone.model.Material;
 import br.unitins.topicos1.bone.repository.MaterialRepository;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -16,23 +17,31 @@ public class MaterialServiceImpl implements MaterialService {
     MaterialRepository repository;
 
     @Override
-    public List<Material> findAll(){
-        return repository.listAll();
+    public List<MaterialDTOResponse> findAll(){
+        return repository
+                    .listAll()
+                    .stream()
+                    .map(m -> MaterialDTOResponse.valueOf(m))
+                    .toList();
     }
 
     @Override
-    public List<Material> findByNome(String nome){
-        return repository.findByNome(nome);
+    public List<MaterialDTOResponse> findByNome(String nome){
+        return repository
+                    .findByNome(nome)
+                    .stream()
+                    .map(m -> MaterialDTOResponse.valueOf(m))
+                    .toList();
     }
 
     @Override
-    public Material findById(Long id){
-        return repository.findById(id);
+    public MaterialDTOResponse findById(Long id){
+        return MaterialDTOResponse.valueOf(repository.findById(id));
     }
 
     @Override
     @Transactional
-    public Material create(MaterialDTO dto){
+    public MaterialDTOResponse create(MaterialDTO dto){
 
         Material material = new Material();
 
@@ -40,7 +49,7 @@ public class MaterialServiceImpl implements MaterialService {
 
         repository.persist(material);
 
-        return material;
+        return MaterialDTOResponse.valueOf(material);
     }
 
     @Override

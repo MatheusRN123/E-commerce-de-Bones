@@ -3,7 +3,7 @@ package br.unitins.topicos1.bone.resource;
 import java.util.List;
 
 import br.unitins.topicos1.bone.dto.BoneDTO;
-import br.unitins.topicos1.bone.model.Bone;
+import br.unitins.topicos1.bone.dto.BoneDTOResponse;
 import br.unitins.topicos1.bone.service.BoneService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -24,7 +24,7 @@ public class BoneResource {
     BoneService service;
 
     @GET
-    public List<Bone> buscarTodos(){
+    public List<BoneDTOResponse> buscarTodos(){
 
         return service.findAll();
 
@@ -32,14 +32,14 @@ public class BoneResource {
 
     @GET
     @Path("/find/{nome}")
-    public List<Bone> buscarPorNome(String nome){
+    public List<BoneDTOResponse> buscarPorNome(String nome){
         
         return service.findByNome(nome);
 
     }
 
     @POST
-    public Bone incluirBone(BoneDTO dto){
+    public BoneDTOResponse incluirBone(BoneDTO dto){
 
         return service.create(dto);
 

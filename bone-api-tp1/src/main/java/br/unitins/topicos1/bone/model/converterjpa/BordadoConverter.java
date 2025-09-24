@@ -16,5 +16,4 @@ public class BordadoConverter implements AttributeConverter<Bordado, Integer> {
     public Bordado convertToEntityAttribute(Integer idBordado) {
         return Bordado.valueOf(idBordado);
     }
-    
 }
