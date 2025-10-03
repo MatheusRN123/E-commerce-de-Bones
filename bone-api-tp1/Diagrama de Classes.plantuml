@@ -1,150 +1,127 @@
 @startuml
-!theme plain
+skinparam classAttributeIconSize 0
 
-skinparam {
-  class {
-    BackgroundColor White
-    BorderColor Black
-    ArrowColor #007acc
-  }
-  note {
-    BackgroundColor #FFF9C4
-    BorderColor #FFC107
-  }
+' =============================
+' SUPERCLASSE
+' =============================
+abstract class DefaultEntity {
+  - Long id
+  --
+  + Long getId()
+  + void setId(Long id)
 }
 
-package "Sistema E-commerce de Bonés" {
-  abstract class Pessoa {
-    - cpf: String
-    - nome: String
-    - endereco: String
-    - telefone: String
-    + getDados(): String
-    + atualizarContato(): void
-  }
-
-  class Usuario {
-    <<abstract>>
-  }
-
-  class Administrador {
-    - email: String
-    - senha: String
-    - nivelAcesso: String
-    + gerenciarProdutos(): void
-    + gerenciarFornecedores(): void
-    + alterarNivelAcesso(): void
-    + visualizarRelatorios(): void
-  }
-
-  class Cliente {
-    - email: String
-    - senha: String
-    - dataCadastro: Date
-    + fazerPedido(): void
-    + adicionarAoCarrinho(): void
-  }
-
-  class Fornecedor {
-    - id: Integer
-    - nome: String
-    - cnpj: String
-    - contato: String
-    + verificarDisponibilidade(): Boolean
-  }
-
-  class Categoria {
-    - id: Integer
-    - nome: String
-    - descricao: String
-    + listarProdutos(): Produto
-  }
-
-  class Produto {
-    - id: Integer
-    - nome: String
-    - descricao: String
-    - preco: Double
-    - estoque: Integer
-    - material: String
-    - tamanho: String
-    - cores: String
-    + verificarEstoque(): Boolean
-  }
-
-  class Pedido {
-    - id: Integer
-    - data: Date
-    - status: String
-    - idCliente: Integer
-    - valorTotal: Double
-    + calcularTotal(): Double
-  }
-
-  class Pagamento {
-    - id: Integer
-    - tipo: String
-    - valor: Double
-    - data: Date
-    - status: String
-    + processarPagamento(): Boolean
-    + gerarComprovante(): void
-    + estornarPagamento(): void
-  }
-
-  class ItemPedido {
-    - idPedido: Integer
-    - idProduto: Integer
-    - quantidade: Integer
-    - precoUnitario: Double
-    - desconto: Double
-    + aplicarDesconto(): void
-  }
-
-  ' Heranças
-  Pessoa <|-- Usuario
-  Usuario <|-- Administrador
-  Usuario <|-- Cliente
-
-  ' Relacionamentos 1-N
-  Fornecedor "1" -- "*" Produto : fornece >
-  Cliente "1" -- "*" Pedido : realiza >
-  Categoria "1" -- "*" Produto : classifica >
-
-  ' Relacionamento 1-1 (composição)
-  Pedido "1" *-- "1" Pagamento : contém >
-
-  ' Relacionamentos N-N através da classe associativa
-  Pedido "1" -- "*" ItemPedido
-  ItemPedido "*" -- "1" Produto
-
-  ' Relacionamentos de gestão (associações)
-  Administrador -- Produto : gerencia >
-  Administrador -- Fornecedor : gerencia >
-
-  ' Notas explicativas
-  note top of Pagamento
-    **Composição**: Se o pedido for
-    excluído, o pagamento também será
-  end note
-
-  note right of Categoria
-    **Agregação**: Produtos podem
-    existir sem categoria
-  end note
-
-  note right of ItemPedido
-    **Tabela associativa** para
-    relacionamento N-N entre
-    Pedido e Produto
-  end note
-
-  note right of Produto
-    **Atributos específicos para bonés**:
-    - material 
-    - tamanho
-    - cores disponíveis
-  end note
+' =============================
+' ENTIDADES CRUD
+' =============================
+class Bone {
+  - String nome
+  - String cor
+  - String categoriaAba
+  - Float tamanhoAba
+  - Float profundidade
+  - String circunferencia
+  - Bordado bordado
+  - Marca marca
+  - Material material
+  - Modelo modelo
+  --
+  + getters/setters()
 }
+
+class Material {
+  - String nome
+  --
+  + getters/setters()
+}
+
+enum Bordado {
+  COM_BORDADO
+  SEM_BORDADO
+  PERSONALIZADO
+  --
+  + Integer getId()
+  + String getNome()
+  + Bordado valueOf(Integer id)
+}
+
+class Marca {
+  - String nome
+  --
+  + getters/setters()
+}
+
+class Modelo {
+  - String nome
+  - String categoria
+  - String estilo
+  --
+  + getters/setters()
+}
+
+class Estoque {
+  - Integer quantidade
+  - Date dataAtualizacao
+  --
+  + Boolean verificarDisponibilidade()
+  + void atualizarQuantidade(Integer quantidade)
+}
+
+class Estampa {
+  - String nome
+  - String tipo
+  - String posicao
+  - String descricao
+  --
+  + getters/setters()
+}
+
+' =============================
+' HERANÇA
+' =============================
+DefaultEntity <|-- Bone
+DefaultEntity <|-- Material
+DefaultEntity <|-- Marca
+DefaultEntity <|-- Modelo
+DefaultEntity <|-- Estoque
+DefaultEntity <|-- Estampa
+
+' =============================
+' RELACIONAMENTOS
+' =============================
+
+' Enum
+Bone --> Bordado
+
+' Relacionamentos 1-N
+Marca "1" -- "*" Bone : possui >
+Modelo "1" -- "*" Bone : classifica >
+Material "1" -- "*" Bone : composto por >
+
+' Composição (1-1)
+Bone "1" *-- "1" Estoque : contém >
+
+' Agregação (N-N)
+Bone "*" o-- "*" Estampa : possui >
+
+' =============================
+' NOTAS EXPLICATIVAS
+' =============================
+note top of Estoque
+  **COMPOSIÇÃO**: Se o Bone for excluído,
+  o Estoque também será excluído
+  (vida dependente)
+end note
+
+note right of Estampa
+  **AGREGAÇÃO**: Estampas podem existir
+  independentemente dos Bonés
+  (vida independente)
+end note
+
+note left of Marca
+  **ASSOCIAÇÃO 1-N**: Uma marca
+  pode ter vários modelos de boné
+end note
 
 @enduml

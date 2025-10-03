@@ -11,10 +11,18 @@ public record BoneDTOResponse(
     String categoriaAba,
     Float tamanhoAba,
     Float profundidade,
-    String circunferência,
-    Bordado bordado
+    String circunferencia,
+    Bordado bordado,
+    String nomeMarca,
+    Integer quantidadeEstoque
 ) {
     public static BoneDTOResponse valueOf(Bone bone){
+        Integer quantidadeEstoque = null;
+        
+        if(bone.getEstoque() != null){
+            quantidadeEstoque = bone.getEstoque().getQuantidade();
+        }
+        
         return new BoneDTOResponse(
             bone.getId(),
             bone.getNome(),
@@ -23,7 +31,9 @@ public record BoneDTOResponse(
             bone.getCategoriaAba(),
             bone.getTamanhoAba(),
             bone.getProfundidade(),
-            bone.getCircunferência(),
-            bone.getBordado());
+            bone.getCircunferencia(),
+            bone.getBordado(),
+            bone.getMarca().getNome(),
+            quantidadeEstoque);
     }
 }

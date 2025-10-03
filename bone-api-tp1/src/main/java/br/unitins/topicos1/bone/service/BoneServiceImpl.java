@@ -5,8 +5,12 @@ import java.util.List;
 import br.unitins.topicos1.bone.dto.BoneDTO;
 import br.unitins.topicos1.bone.dto.BoneDTOResponse;
 import br.unitins.topicos1.bone.model.Bone;
+import br.unitins.topicos1.bone.model.Estoque;
+import br.unitins.topicos1.bone.model.Marca;
 import br.unitins.topicos1.bone.model.Material;
 import br.unitins.topicos1.bone.repository.BoneRepository;
+import br.unitins.topicos1.bone.repository.EstoqueRepository;
+import br.unitins.topicos1.bone.repository.MarcaRepository;
 import br.unitins.topicos1.bone.repository.MaterialRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -20,6 +24,12 @@ public class BoneServiceImpl implements BoneService {
 
     @Inject
     MaterialRepository repositoryMaterial;
+
+    @Inject
+    MarcaRepository repositoryMarca;
+
+    @Inject
+    EstoqueRepository repositoryEstoque;
 
     @Override
     public List<BoneDTOResponse> findAll() {
@@ -54,11 +64,30 @@ public class BoneServiceImpl implements BoneService {
         bone.setCategoriaAba(dto.categoriaAba());
         bone.setTamanhoAba(dto.tamanhoAba());
         bone.setProfundidade(dto.profundidade());
-        bone.setCircunferência(dto.circunferência());
+        bone.setCircunferencia(dto.circunferencia());
         bone.setBordado(dto.bordado());
 
         Material material = repositoryMaterial.findById(dto.idMaterial());
         bone.setMaterial(material);
+
+        Marca marca = repositoryMarca.findById(dto.idMarca());
+        bone.setMarca(marca);
+
+        Estoque estoque = null;
+        
+        if(dto.idEstoque() != null){
+            
+            estoque = repositoryEstoque.findById(dto.idEstoque());
+        
+        }else{
+
+            estoque = new Estoque();
+            estoque.setQuantidade(0);
+            repositoryEstoque.persist(estoque);
+
+        }
+
+        bone.setEstoque(estoque);
 
         repository.persist(bone);
 
@@ -76,11 +105,26 @@ public class BoneServiceImpl implements BoneService {
         bone.setCategoriaAba(dto.categoriaAba());
         bone.setTamanhoAba(dto.tamanhoAba());
         bone.setProfundidade(dto.profundidade());
-        bone.setCircunferência(dto.circunferência());
+        bone.setCircunferencia(dto.circunferencia());
         bone.setBordado(dto.bordado());
 
         Material material = repositoryMaterial.findById(dto.idMaterial());
         bone.setMaterial(material);
+
+        Marca marca = repositoryMarca.findById(dto.idMarca());
+        bone.setMarca(marca);
+
+        if(dto.idEstoque() != null){
+            
+            Estoque estoque = repositoryEstoque.findById(dto.idEstoque());
+            bone.setEstoque(estoque);
+
+        }else if(bone.getEstoque() == null){
+            Estoque estoque = new Estoque();
+            estoque.setQuantidade(0);
+            repositoryEstoque.persist(estoque);
+            bone.setEstoque(estoque);
+        }
 
     }
 

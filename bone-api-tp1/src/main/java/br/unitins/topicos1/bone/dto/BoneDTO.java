@@ -9,6 +9,8 @@ public record BoneDTO(
     String categoriaAba,
     Float tamanhoAba,
     Float profundidade,
-    String circunferência,
-    Bordado bordado
+    String circunferencia,
+    Bordado bordado,
+    Long idMarca,
+    Long idEstoque
 ) {}

@@ -1,10 +1,13 @@
 package br.unitins.topicos1.bone.model;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 
 @Entity
 public class Bone extends DefaultEntity {
@@ -12,17 +15,30 @@ public class Bone extends DefaultEntity {
 
     private String nome;
     private String cor;
+
+    @Column(name = "categoria_aba")
     private String categoriaAba;
+
+    @Column(name = "tamanho_aba")
     private Float tamanhoAba;
     private Float profundidade;
-    private String circunferência;
 
-    @Enumerated(EnumType.STRING)
+    private String circunferencia;
+
+    @Enumerated(EnumType.ORDINAL)
     private Bordado bordado;
 
     @ManyToOne
     @JoinColumn(name = "id_material")
     private Material material;
+
+    @ManyToOne
+    @JoinColumn(name = "id_marca")
+    private Marca marca;
+
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "id_estoque")
+    private Estoque estoque;
 
 
 
@@ -74,12 +90,12 @@ public class Bone extends DefaultEntity {
         this.profundidade = profundidade;
     }
 
-    public String getCircunferência() {
-        return circunferência;
+    public String getCircunferencia() {
+        return circunferencia;
     }
 
-    public void setCircunferência(String circunferência) {
-        this.circunferência = circunferência;
+    public void setCircunferencia(String circunferencia) {
+        this.circunferencia = circunferencia;
     }
 
     public Bordado getBordado() {
@@ -88,5 +104,21 @@ public class Bone extends DefaultEntity {
 
     public void setBordado(Bordado bordado) {
         this.bordado = bordado;
+    }
+
+    public Marca getMarca(){
+        return marca;
+    }
+
+    public void setMarca(Marca marca){
+        this.marca = marca;
+    }
+
+    public Estoque getEstoque(){
+        return estoque;
+    }
+
+    public void setEstoque(Estoque estoque){
+        this.estoque = estoque;
     }
 }

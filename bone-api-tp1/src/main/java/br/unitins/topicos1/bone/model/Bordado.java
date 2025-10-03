@@ -1,6 +1,7 @@
 package br.unitins.topicos1.bone.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum Bordado {
@@ -9,20 +10,23 @@ public enum Bordado {
     SEM_BORDADO(2, "Sem Bordado"),
     PERSONALIZADO(3, "Personalizado");
 
-    private int id;
-    private String label;
+    @JsonProperty("id")
+    public final int ID;
 
-    Bordado(int id, String label) {
-        this.id = id;
-        this.label = label;
+    @JsonProperty("nome")
+    public final String NOME;
+
+    Bordado(int id, String nome) {
+        this.ID = id;
+        this.NOME = nome;
     }
 
     public int getId() {
-        return id;
+        return ID;
     }
 
-    public String getLabel() {
-        return label;
+    public String getNome() {
+        return NOME;
     }
 
     public static Bordado valueOf(Integer id) throws IllegalArgumentException {

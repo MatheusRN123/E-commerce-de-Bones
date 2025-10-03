@@ -3,7 +3,7 @@ package br.unitins.topicos1.bone.model;
 import jakarta.persistence.Entity;
 
 @Entity
-public class Material extends DefaultEntity{
+public class Marca extends DefaultEntity{
     
     private String nome;
 
