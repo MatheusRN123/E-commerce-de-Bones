@@ -1,5 +1,7 @@
 package br.unitins.topicos1.bone.dto;
 
+import java.util.List;
+
 import br.unitins.topicos1.bone.model.Bone;
 import br.unitins.topicos1.bone.model.Bordado;
 
@@ -14,15 +16,16 @@ public record BoneDTOResponse(
     String circunferencia,
     Bordado bordado,
     String nomeMarca,
-    Integer quantidadeEstoque
+    Integer quantidadeEstoque,
+    String nomeModelo,
+    List<String> nomesEstampas
 ) {
+    
     public static BoneDTOResponse valueOf(Bone bone){
-        Integer quantidadeEstoque = null;
-        
-        if(bone.getEstoque() != null){
-            quantidadeEstoque = bone.getEstoque().getQuantidade();
-        }
-        
+        Integer quantidadeEstoque = (bone.getEstoque() != null) ? bone.getEstoque().getQuantidade() : null;
+
+        List<String> nomesEstampas = (bone.getEstampas() != null) ? bone.getEstampas().stream().map(e -> e.getNome()).toList() : null;
+
         return new BoneDTOResponse(
             bone.getId(),
             bone.getNome(),
@@ -34,6 +37,9 @@ public record BoneDTOResponse(
             bone.getCircunferencia(),
             bone.getBordado(),
             bone.getMarca().getNome(),
-            quantidadeEstoque);
+            quantidadeEstoque,
+            bone.getModelo().getNome(),
+            nomesEstampas
+        );
     }
 }

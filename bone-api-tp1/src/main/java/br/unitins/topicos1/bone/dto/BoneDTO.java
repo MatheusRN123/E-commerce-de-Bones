@@ -1,5 +1,7 @@
 package br.unitins.topicos1.bone.dto;
 
+import java.util.List;
+
 import br.unitins.topicos1.bone.model.Bordado;
 
 public record BoneDTO(
@@ -12,5 +14,6 @@ public record BoneDTO(
     String circunferencia,
     Bordado bordado,
     Long idMarca,
-    Long idEstoque
+    Long idModelo,
+    List<Long> idsEstampas
 ) {}

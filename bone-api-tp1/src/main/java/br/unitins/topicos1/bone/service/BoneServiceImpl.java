@@ -1,17 +1,23 @@
 package br.unitins.topicos1.bone.service;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import br.unitins.topicos1.bone.dto.BoneDTO;
 import br.unitins.topicos1.bone.dto.BoneDTOResponse;
 import br.unitins.topicos1.bone.model.Bone;
+import br.unitins.topicos1.bone.model.Estampa;
 import br.unitins.topicos1.bone.model.Estoque;
 import br.unitins.topicos1.bone.model.Marca;
 import br.unitins.topicos1.bone.model.Material;
+import br.unitins.topicos1.bone.model.Modelo;
 import br.unitins.topicos1.bone.repository.BoneRepository;
+import br.unitins.topicos1.bone.repository.EstampaRepository;
 import br.unitins.topicos1.bone.repository.EstoqueRepository;
 import br.unitins.topicos1.bone.repository.MarcaRepository;
 import br.unitins.topicos1.bone.repository.MaterialRepository;
+import br.unitins.topicos1.bone.repository.ModeloRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -29,7 +35,13 @@ public class BoneServiceImpl implements BoneService {
     MarcaRepository repositoryMarca;
 
     @Inject
+    ModeloRepository repositoryModelo;
+
+    @Inject
     EstoqueRepository repositoryEstoque;
+
+    @Inject
+    EstampaRepository repositoryEstampa;
 
     @Override
     public List<BoneDTOResponse> findAll() {
@@ -73,23 +85,36 @@ public class BoneServiceImpl implements BoneService {
         Marca marca = repositoryMarca.findById(dto.idMarca());
         bone.setMarca(marca);
 
-        Estoque estoque = null;
-        
-        if(dto.idEstoque() != null){
-            
-            estoque = repositoryEstoque.findById(dto.idEstoque());
-        
-        }else{
-
-            estoque = new Estoque();
-            estoque.setQuantidade(0);
-            repositoryEstoque.persist(estoque);
-
-        }
-
-        bone.setEstoque(estoque);
+        Modelo modelo = repositoryModelo.findById(dto.idModelo());
+        bone.setModelo(modelo);
 
         repository.persist(bone);
+
+        Estoque estoque = new Estoque();
+        estoque.setQuantidade(0);
+        estoque.setDataAtualizacao(LocalDate.now());
+        estoque.setBone(bone);
+        repositoryEstoque.persist(estoque);
+        
+        bone.setEstoque(estoque);
+
+        if (bone.getEstampas() == null) {
+            bone.setEstampas(new ArrayList<>());
+        }
+
+        if (dto.idsEstampas() == null || dto.idsEstampas().isEmpty()) {
+            bone.getEstampas().clear();
+            return BoneDTOResponse.valueOf(bone);
+        }
+
+        List<Estampa> estampas = repositoryEstampa.findByIds(dto.idsEstampas());
+
+        if (estampas.size() != dto.idsEstampas().size()) {
+
+            throw new IllegalArgumentException("Uma ou mais estampas informadas não existem.");
+        }
+
+        bone.setEstampas(estampas);
 
         return BoneDTOResponse.valueOf(bone);
     }
@@ -114,23 +139,51 @@ public class BoneServiceImpl implements BoneService {
         Marca marca = repositoryMarca.findById(dto.idMarca());
         bone.setMarca(marca);
 
-        if(dto.idEstoque() != null){
-            
-            Estoque estoque = repositoryEstoque.findById(dto.idEstoque());
-            bone.setEstoque(estoque);
+        Modelo modelo = repositoryModelo.findById(dto.idModelo());
+        bone.setModelo(modelo);
 
-        }else if(bone.getEstoque() == null){
-            Estoque estoque = new Estoque();
-            estoque.setQuantidade(0);
-            repositoryEstoque.persist(estoque);
-            bone.setEstoque(estoque);
+
+        if (bone.getEstampas() == null) {
+            bone.setEstampas(new ArrayList<>());
         }
 
+        if (dto.idsEstampas() == null || dto.idsEstampas().isEmpty()) {
+
+            bone.getEstampas().clear();
+            return;
+        }
+
+        List<Estampa> estampas = repositoryEstampa.findByIds(dto.idsEstampas());
+
+        if (estampas.size() != dto.idsEstampas().size()) {
+
+            throw new IllegalArgumentException("Uma ou mais estampas informadas não existem.");
+        }
+
+        bone.setEstampas(estampas);
+        
+        Estoque estoque = bone.getEstoque();
+    
+        if (estoque == null) {
+            estoque = new Estoque();
+            estoque.setQuantidade(0);
+            estoque.setDataAtualizacao(LocalDate.now());
+            estoque.setBone(bone);
+            repositoryEstoque.persist(estoque);
+            bone.setEstoque(estoque);
+        } else {
+            estoque.setDataAtualizacao(LocalDate.now());
+        }
+    
     }
 
     @Override
     @Transactional
     public void delete(Long id) {
+        
+        Estoque estoque = repositoryEstoque.findByBoneId(id);
+        if (estoque != null)
+            repositoryEstoque.delete(estoque);
         repository.deleteById(id);
     }
     

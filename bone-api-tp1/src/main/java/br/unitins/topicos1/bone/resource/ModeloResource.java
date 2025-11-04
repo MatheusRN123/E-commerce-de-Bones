@@ -1,7 +1,7 @@
 package br.unitins.topicos1.bone.resource;
 
-import br.unitins.topicos1.bone.dto.MarcaDTO;
-import br.unitins.topicos1.bone.service.MarcaService;
+import br.unitins.topicos1.bone.dto.ModeloDTO;
+import br.unitins.topicos1.bone.service.ModeloService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -14,13 +14,13 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 
-@Path("/marcas")
+@Path("/modelos")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class MarcaResource {
+public class ModeloResource {
 
     @Inject
-    MarcaService service;
+    ModeloService service;
 
     @GET
     public Response buscarTodos() {
@@ -34,20 +34,20 @@ public class MarcaResource {
     }
 
     @POST
-    public Response incluirMarca(MarcaDTO dto) {
+    public Response incluirModelo(ModeloDTO dto) {
         return Response.status(Status.CREATED).entity(service.create(dto)).build();
     }
 
     @PUT
     @Path("/{id}")
-    public Response alterarMarca(Long id, MarcaDTO dto) {
+    public Response alterarModelo(Long id, ModeloDTO dto) {
         service.update(id, dto);
         return Response.noContent().build();
     }
 
     @DELETE
     @Path("/{id}")
-    public Response apagarMarca(Long id) {
+    public Response apagarModelo(Long id) {
         service.delete(id);
         return Response.noContent().build();
     }

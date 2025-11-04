@@ -1,9 +1,6 @@
 package br.unitins.topicos1.bone.resource;
 
-import java.util.List;
-
 import br.unitins.topicos1.bone.dto.BoneDTO;
-import br.unitins.topicos1.bone.dto.BoneDTOResponse;
 import br.unitins.topicos1.bone.service.BoneService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -14,6 +11,8 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 
 @Path("/bones")
 @Produces(MediaType.APPLICATION_JSON)
@@ -24,40 +23,42 @@ public class BoneResource {
     BoneService service;
 
     @GET
-    public List<BoneDTOResponse> buscarTodos(){
+    public Response buscarTodos(){
 
-        return service.findAll();
+        return Response.ok(service.findAll()).build();
 
     }
 
     @GET
     @Path("/find/{nome}")
-    public List<BoneDTOResponse> buscarPorNome(String nome){
+    public Response buscarPorNome(String nome){
         
-        return service.findByNome(nome);
+        return Response.ok(service.findByNome(nome)).build();
 
     }
 
     @POST
-    public BoneDTOResponse incluirBone(BoneDTO dto){
+    public Response incluirBone(BoneDTO dto){
 
-        return service.create(dto);
+        return Response.status(Status.CREATED).entity(service.create(dto)).build();
 
     }
 
     @PUT
     @Path("/{id}")
-    public void alterarBone(Long id, BoneDTO dto){
+    public Response alterarBone(Long id, BoneDTO dto){
 
         service.update(id, dto);
+        return Response.noContent().build();
 
     }
 
     @DELETE
     @Path("/{id}")
-    public void deletarBone(Long id){
+    public Response deletarBone(Long id){
 
         service.delete(id);
+        return Response.noContent().build();
 
     }
 

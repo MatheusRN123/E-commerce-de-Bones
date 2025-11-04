@@ -1,9 +1,6 @@
 package br.unitins.topicos1.bone.resource;
 
-import java.util.List;
-
 import br.unitins.topicos1.bone.dto.MaterialDTO;
-import br.unitins.topicos1.bone.dto.MaterialDTOResponse;
 import br.unitins.topicos1.bone.service.MaterialService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -14,6 +11,8 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 
 @Path("/materiais")
 @Produces(MediaType.APPLICATION_JSON)
@@ -24,30 +23,32 @@ public class MaterialResource {
     MaterialService service;
 
     @GET
-    public List<MaterialDTOResponse> buscarTodos() {
-        return service.findAll();
+    public Response buscarTodos() {
+        return Response.ok(service.findAll()).build();
     }
 
     @GET
     @Path("/find/{nome}")
-    public List<MaterialDTOResponse> buscarPorNome(String nome) {
-        return service.findByNome(nome);
+    public Response buscarPorNome(String nome) {
+        return Response.ok(service.findByNome(nome)).build();
     }
 
     @POST
-    public MaterialDTOResponse incluirMaterial(MaterialDTO dto) {
-        return service.create(dto);
+    public Response incluirMaterial(MaterialDTO dto) {
+        return Response.status(Status.CREATED).entity(service.create(dto)).build();
     }
 
     @PUT
     @Path("/{id}")
-    public void alterarMaterial(Long id, MaterialDTO dto) {
+    public Response alterarMaterial(Long id, MaterialDTO dto) {
         service.update(id, dto);
+        return Response.noContent().build();
     }
 
     @DELETE
     @Path("/{id}")
-    public void apagarMaterial(Long id) {
+    public Response apagarMaterial(Long id) {
         service.delete(id);
+        return Response.noContent().build();
     }
 }

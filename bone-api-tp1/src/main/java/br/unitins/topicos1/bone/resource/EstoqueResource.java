@@ -1,9 +1,6 @@
 package br.unitins.topicos1.bone.resource;
 
-import java.util.List;
-
 import br.unitins.topicos1.bone.dto.EstoqueDTO;
-import br.unitins.topicos1.bone.dto.EstoqueDTOResponse;
 import br.unitins.topicos1.bone.service.EstoqueService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -14,6 +11,8 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 
 @Path("/estoques")
 @Produces(MediaType.APPLICATION_JSON)
@@ -24,55 +23,59 @@ public class EstoqueResource {
     EstoqueService service;
 
     @GET
-    public List<EstoqueDTOResponse> buscarTodos() {
-        return service.findAll();
+    public Response buscarTodos() {
+        return Response.ok(service.findAll()).build();
     }
 
     @GET
     @Path("/find/{quantidade}")
-    public List<EstoqueDTOResponse> buscarPorQuantidade(Integer quantidade) {
-        return service.findByQuantidade(quantidade);
+    public Response buscarPorQuantidade(Integer quantidade) {
+        return Response.ok(service.findByQuantidade(quantidade)).build();
     }
 
     @GET
     @Path("/bone/{idBone}")
-    public EstoqueDTOResponse buscarPorBoneId(Long id){
-        return service.findByBoneId(id);
+    public Response buscarPorBoneId(Long id){
+        return Response.ok(service.findByBoneId(id)).build();
     }
 
     @POST
-    public EstoqueDTOResponse incluirEstoque(EstoqueDTO dto) {
-        return service.create(dto);
+    public Response incluirEstoque(EstoqueDTO dto) {
+        return Response.status(Status.CREATED).entity(service.create(dto)).build();
     }
 
     @PUT
     @Path("/{id}")
-    public void alterarEstoque(Long id, EstoqueDTO dto) {
+    public Response alterarEstoque(Long id, EstoqueDTO dto) {
         service.update(id, dto);
+        return Response.noContent().build();
     }
 
     @DELETE
     @Path("/{id}")
-    public void apagarEstoque(Long id) {
+    public Response apagarEstoque(Long id) {
         service.delete(id);
+        return Response.noContent().build();
     }
 
     @GET
     @Path("/{id}/disponibilidade")
-    public Boolean verificarDisponibilidade(Long id) {
-        return service.verificarDisponibilidade(id);
+    public Response verificarDisponibilidade(Long id) {
+        return Response.ok(service.verificarDisponibilidade(id)).build();
     }
 
     @PUT
     @Path("/{id}/quantidade")
-    public void atualizarQuantidade(Long id, EstoqueDTO dto) {
+    public Response atualizarQuantidade(Long id, EstoqueDTO dto) {
         service.atualizarQuantidade(id, dto);
+        return Response.noContent().build();
     }
 
     @PUT
     @Path("/{id}/adicionar/adicionar")
-    public void adicionarQuantidade(Long id, EstoqueDTO dto) {
+    public Response adicionarQuantidade(Long id, EstoqueDTO dto) {
         service.adicionarQuantidade(id, dto);
+        return Response.noContent().build();
     }
 
 }

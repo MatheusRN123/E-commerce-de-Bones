@@ -2,16 +2,6 @@
 skinparam classAttributeIconSize 0
 
 ' =============================
-' SUPERCLASSE
-' =============================
-abstract class DefaultEntity {
-  - Long id
-  --
-  + Long getId()
-  + void setId(Long id)
-}
-
-' =============================
 ' ENTIDADES CRUD
 ' =============================
 class Bone {
@@ -25,46 +15,32 @@ class Bone {
   - Marca marca
   - Material material
   - Modelo modelo
-  --
-  + getters/setters()
 }
 
 class Material {
   - String nome
-  --
-  + getters/setters()
 }
 
 enum Bordado {
   COM_BORDADO
   SEM_BORDADO
   PERSONALIZADO
-  --
-  + Integer getId()
-  + String getNome()
-  + Bordado valueOf(Integer id)
+
 }
 
 class Marca {
   - String nome
-  --
-  + getters/setters()
 }
 
 class Modelo {
   - String nome
   - String categoria
   - String estilo
-  --
-  + getters/setters()
 }
 
 class Estoque {
   - Integer quantidade
   - Date dataAtualizacao
-  --
-  + Boolean verificarDisponibilidade()
-  + void atualizarQuantidade(Integer quantidade)
 }
 
 class Estampa {
@@ -72,19 +48,8 @@ class Estampa {
   - String tipo
   - String posicao
   - String descricao
-  --
-  + getters/setters()
 }
 
-' =============================
-' HERANÇA
-' =============================
-DefaultEntity <|-- Bone
-DefaultEntity <|-- Material
-DefaultEntity <|-- Marca
-DefaultEntity <|-- Modelo
-DefaultEntity <|-- Estoque
-DefaultEntity <|-- Estampa
 
 ' =============================
 ' RELACIONAMENTOS
@@ -94,15 +59,15 @@ DefaultEntity <|-- Estampa
 Bone --> Bordado
 
 ' Relacionamentos 1-N
-Marca "1" -- "*" Bone : possui >
-Modelo "1" -- "*" Bone : classifica >
-Material "1" -- "*" Bone : composto por >
+Marca "1" -- "*" Bone : marca <
+Modelo "1" -- "*" Bone : modelo <
+Material "1" -- "*" Bone : material <
 
 ' Composição (1-1)
-Bone "1" *-- "1" Estoque : contém >
+Bone "1" *-- "1" Estoque : estoque <
 
 ' Agregação (N-N)
-Bone "*" o-- "*" Estampa : possui >
+Bone "*" o-- "*" Estampa : estampa <
 
 ' =============================
 ' NOTAS EXPLICATIVAS

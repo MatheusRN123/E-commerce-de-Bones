@@ -1,18 +1,28 @@
 package br.unitins.topicos1.bone.model;
 
+import java.util.List;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 
 @Entity
-public class Bone extends DefaultEntity {
+public class Bone {
     
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_bone")
+    private Long id;
     private String nome;
     private String cor;
 
@@ -36,8 +46,19 @@ public class Bone extends DefaultEntity {
     @JoinColumn(name = "id_marca")
     private Marca marca;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "id_estoque")
+    @ManyToOne
+    @JoinColumn(name = "id_modelo")
+    private Modelo modelo;
+
+    @ManyToMany
+    @JoinTable(
+        name = "bone_estampa",
+        joinColumns = @JoinColumn(name = "id_bone"),
+        inverseJoinColumns = @JoinColumn(name = "id_estampa")
+    )
+    private List<Estampa> estampas;
+
+    @OneToOne(mappedBy = "bone", cascade = CascadeType.ALL, orphanRemoval = true)
     private Estoque estoque;
 
 
@@ -121,4 +142,30 @@ public class Bone extends DefaultEntity {
     public void setEstoque(Estoque estoque){
         this.estoque = estoque;
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Modelo getModelo() {
+        return modelo;
+    }
+
+    public void setModelo(Modelo modelo) {
+        this.modelo = modelo;
+    }
+
+    public List<Estampa> getEstampas() {
+        return estampas;
+    }
+
+    public void setEstampas(List<Estampa> estampas) {
+        this.estampas = estampas;
+    }
+
+    
 }
