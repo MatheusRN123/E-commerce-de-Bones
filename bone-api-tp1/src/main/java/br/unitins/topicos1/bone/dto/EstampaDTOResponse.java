@@ -4,18 +4,18 @@ import br.unitins.topicos1.bone.model.Estampa;
 
 public record EstampaDTOResponse(
     Long id,
-    String nome,
     String tipo,
+    String nome,
     String posicao,
     String descricao
 ) {
-    public static EstampaDTOResponse valueOf(Estampa estampa){
+    public static EstampaDTOResponse valueOf(Estampa e) {
         return new EstampaDTOResponse(
-            estampa.getId(),
-            estampa.getNome(),
-            estampa.getTipo(),
-            estampa.getPosicao(),
-            estampa.getDescricao()
-            );
+            e.getId(),
+            e.getTipo(),
+            e.getNome(),
+            e.getPosicao(),
+            e.getDescricao()
+        );
     }
 }

@@ -39,17 +39,6 @@ public class EstoqueServiceImpl implements EstoqueService {
     }
 
     @Override
-    public EstoqueDTOResponse findByBoneId(Long id){
-        var bone = boneRepository.findById(id);
-        
-        if(bone == null || bone.getEstoque() == null){
-            return null;
-        }
-
-        return EstoqueDTOResponse.valueOf(bone.getEstoque());
-    }
-
-    @Override
     public EstoqueDTOResponse findById(Long id){
         return EstoqueDTOResponse.valueOf(repository.findById(id));
     }

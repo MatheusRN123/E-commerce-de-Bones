@@ -28,15 +28,15 @@ public class EstoqueResource {
     }
 
     @GET
-    @Path("/find/{quantidade}")
-    public Response buscarPorQuantidade(Integer quantidade) {
-        return Response.ok(service.findByQuantidade(quantidade)).build();
+    @Path("/{id}")
+    public Response buscarPorId(Long id) {
+        return Response.ok(service.findById(id)).build();
     }
 
     @GET
-    @Path("/bone/{idBone}")
-    public Response buscarPorBoneId(Long id){
-        return Response.ok(service.findByBoneId(id)).build();
+    @Path("/find/{quantidade}")
+    public Response buscarPorQuantidade(Integer quantidade) {
+        return Response.ok(service.findByQuantidade(quantidade)).build();
     }
 
     @POST

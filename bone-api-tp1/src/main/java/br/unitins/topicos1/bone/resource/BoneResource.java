@@ -1,6 +1,7 @@
 package br.unitins.topicos1.bone.resource;
 
 import br.unitins.topicos1.bone.dto.BoneDTO;
+import br.unitins.topicos1.bone.dto.BoneDTOResponse;
 import br.unitins.topicos1.bone.service.BoneService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -35,6 +36,16 @@ public class BoneResource {
         
         return Response.ok(service.findByNome(nome)).build();
 
+    }
+
+    @GET
+    @Path("/{id}")
+    public Response buscarPorId(Long id) {
+        BoneDTOResponse response = service.findById(id);
+        if(response == null){
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok(response).build();
     }
 
     @POST

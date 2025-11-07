@@ -24,10 +24,6 @@ public class Estoque {
     @Column(name = "data_atualizacao")
     private LocalDate dataAtualizacao;
 
-    @OneToOne
-    @JoinColumn(name = "id_bone", nullable = false)
-    private Bone bone;
-
 
     public Boolean verificarDisponibilidade() {
         return quantidade != null && quantidade > 0;
@@ -70,13 +66,5 @@ public class Estoque {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Bone getBone() {
-        return bone;
-    }
-
-    public void setBone(Bone bone) {
-        this.bone = bone;
     }
 }

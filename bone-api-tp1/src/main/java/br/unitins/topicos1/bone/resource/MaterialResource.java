@@ -33,6 +33,12 @@ public class MaterialResource {
         return Response.ok(service.findByNome(nome)).build();
     }
 
+    @GET
+    @Path("/{id}")
+    public Response buscarPorId(Long id) {
+        return Response.ok(service.findById(id)).build();
+    }
+
     @POST
     public Response incluirMaterial(MaterialDTO dto) {
         return Response.status(Status.CREATED).entity(service.create(dto)).build();

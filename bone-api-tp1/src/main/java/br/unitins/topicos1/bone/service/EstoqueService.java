@@ -9,7 +9,6 @@ public interface EstoqueService {
     
     List<EstoqueDTOResponse> findAll();
     List<EstoqueDTOResponse> findByQuantidade(Integer quantidade);
-    EstoqueDTOResponse findByBoneId(Long id);
     EstoqueDTOResponse findById(Long id);
     EstoqueDTOResponse create(EstoqueDTO dto);
     void update(Long id, EstoqueDTO dto);

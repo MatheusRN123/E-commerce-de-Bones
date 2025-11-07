@@ -1,8 +1,9 @@
 package br.unitins.topicos1.bone.dto;
 
-public record EstampaDTO(
+public record EstampaDigitalDTO(
     String nome,
     String tipo,
     String posicao,
-    String descricao
+    String descricao,
+    String resolucao
 ) {}

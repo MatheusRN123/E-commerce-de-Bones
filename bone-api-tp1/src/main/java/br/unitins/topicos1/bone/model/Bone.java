@@ -58,7 +58,8 @@ public class Bone {
     )
     private List<Estampa> estampas;
 
-    @OneToOne(mappedBy = "bone", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "id_estoque")
     private Estoque estoque;
 
 

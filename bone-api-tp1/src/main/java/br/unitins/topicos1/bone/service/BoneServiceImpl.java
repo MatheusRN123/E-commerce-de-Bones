@@ -21,6 +21,7 @@ import br.unitins.topicos1.bone.repository.ModeloRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.NotFoundException;
 
 @ApplicationScoped
 public class BoneServiceImpl implements BoneService {
@@ -63,7 +64,11 @@ public class BoneServiceImpl implements BoneService {
 
     @Override
     public BoneDTOResponse findById(Long id) {
-        return BoneDTOResponse.valueOf(repository.findById(id));
+        Bone bone = repository.findById(id);
+        if(bone == null){
+            return null;
+        }
+        return BoneDTOResponse.valueOf(bone);
     }
 
     @Override
@@ -88,15 +93,15 @@ public class BoneServiceImpl implements BoneService {
         Modelo modelo = repositoryModelo.findById(dto.idModelo());
         bone.setModelo(modelo);
 
-        repository.persist(bone);
-
         Estoque estoque = new Estoque();
-        estoque.setQuantidade(0);
+        int quantidade = (dto.quantidadeEstoque() != null) ? dto.quantidadeEstoque() : 0;
+        estoque.setQuantidade(quantidade);
         estoque.setDataAtualizacao(LocalDate.now());
-        estoque.setBone(bone);
         repositoryEstoque.persist(estoque);
         
         bone.setEstoque(estoque);
+
+        repository.persist(bone);
 
         if (bone.getEstampas() == null) {
             bone.setEstampas(new ArrayList<>());
@@ -124,6 +129,10 @@ public class BoneServiceImpl implements BoneService {
     public void update(Long id, BoneDTO dto) {
 
         Bone bone = repository.findById(id);
+
+        if(bone == null){
+            throw new NotFoundException("Boné não encontrado");
+        }
 
         bone.setNome(dto.nome());
         bone.setCor(dto.cor());
@@ -166,12 +175,15 @@ public class BoneServiceImpl implements BoneService {
     
         if (estoque == null) {
             estoque = new Estoque();
-            estoque.setQuantidade(0);
+            int quantidade = (dto.quantidadeEstoque() != null) ? dto.quantidadeEstoque() : 0;
+            estoque.setQuantidade(quantidade);
             estoque.setDataAtualizacao(LocalDate.now());
-            estoque.setBone(bone);
             repositoryEstoque.persist(estoque);
             bone.setEstoque(estoque);
         } else {
+            if(dto.quantidadeEstoque() != null){
+                estoque.setQuantidade(dto.quantidadeEstoque());
+            }
             estoque.setDataAtualizacao(LocalDate.now());
         }
     
@@ -180,11 +192,9 @@ public class BoneServiceImpl implements BoneService {
     @Override
     @Transactional
     public void delete(Long id) {
-        
-        Estoque estoque = repositoryEstoque.findByBoneId(id);
-        if (estoque != null)
-            repositoryEstoque.delete(estoque);
+
         repository.deleteById(id);
+
     }
     
 }

@@ -15,5 +15,6 @@ public record BoneDTO(
     Bordado bordado,
     Long idMarca,
     Long idModelo,
+    Integer quantidadeEstoque,
     List<Long> idsEstampas
 ) {}

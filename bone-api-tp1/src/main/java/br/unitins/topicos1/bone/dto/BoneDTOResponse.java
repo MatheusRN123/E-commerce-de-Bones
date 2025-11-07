@@ -4,6 +4,8 @@ import java.util.List;
 
 import br.unitins.topicos1.bone.model.Bone;
 import br.unitins.topicos1.bone.model.Bordado;
+import br.unitins.topicos1.bone.model.EstampaBordada;
+import br.unitins.topicos1.bone.model.EstampaDigital;
 
 public record BoneDTOResponse(
     Long id,
@@ -18,13 +20,20 @@ public record BoneDTOResponse(
     String nomeMarca,
     Integer quantidadeEstoque,
     String nomeModelo,
-    List<String> nomesEstampas
-) {
+    List<?> estampas
+)  {
     
-    public static BoneDTOResponse valueOf(Bone bone){
-        Integer quantidadeEstoque = (bone.getEstoque() != null) ? bone.getEstoque().getQuantidade() : null;
+        public static BoneDTOResponse valueOf(Bone bone){
+        Integer quantidadeEstoque = (bone.getEstoque() != null) ? bone.getEstoque().    getQuantidade() : null;
 
-        List<String> nomesEstampas = (bone.getEstampas() != null) ? bone.getEstampas().stream().map(e -> e.getNome()).toList() : null;
+        List<?> estampas = (bone.getEstampas() != null) ? bone.getEstampas().stream().map(estampa -> {
+            if (estampa instanceof EstampaBordada eb){
+                return EstampaBordadaDTOResponse.valueOf(eb);
+            } else if (estampa instanceof EstampaDigital ed){
+                return EstampaDigitalDTOResponse.valueOf(ed);
+            }
+            return null;
+        }).toList() : null;
 
         return new BoneDTOResponse(
             bone.getId(),
@@ -39,7 +48,8 @@ public record BoneDTOResponse(
             bone.getMarca().getNome(),
             quantidadeEstoque,
             bone.getModelo().getNome(),
-            nomesEstampas
+            estampas
         );
     }
 }
+

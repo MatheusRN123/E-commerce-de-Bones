@@ -3,21 +3,27 @@ package br.unitins.topicos1.bone.model;
 import java.util.List;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.DiscriminatorType;
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 import jakarta.persistence.ManyToMany;
 
 @Entity
-public class Estampa {
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "tipo_estampa", discriminatorType = DiscriminatorType.STRING)
+public abstract class Estampa {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_estampa")
     private Long id;
     private String nome;
-    private String tipo;
     private String posicao;
     private String descricao;
 
@@ -38,10 +44,7 @@ public class Estampa {
         this.nome = nome;
     }
     public String getTipo() {
-        return tipo;
-    }
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
+        return this.getClass().getAnnotation(DiscriminatorValue.class).value();
     }
     public String getPosicao() {
         return posicao;
