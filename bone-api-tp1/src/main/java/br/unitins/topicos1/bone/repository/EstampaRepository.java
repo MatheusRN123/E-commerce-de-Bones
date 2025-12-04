@@ -20,5 +20,4 @@ public class EstampaRepository implements PanacheRepository<Estampa> {
     public List<Estampa> findByTipo(String tipo) {
         return find("tipo_estampa = ?1", tipo).list();
     }
-
 }
