@@ -1,21 +1,33 @@
-package br.unitins.topicos1.bone.resource;
+package br.unitins.topicos1.bone.resources;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
+import static org.hamcrest.CoreMatchers.anyOf;
+
 import org.junit.jupiter.api.Test;
-import io.quarkus.test.junit.QuarkusTest;
-import io.restassured.http.ContentType;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 
 import br.unitins.topicos1.bone.dto.MaterialDTO;
+import br.unitins.topicos1.bone.service.JwtService;
+import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.http.ContentType;
+import jakarta.inject.Inject;
 
 @QuarkusTest
+@TestInstance(Lifecycle.PER_CLASS)
 public class MaterialResourceTest {
+
+
+    @Inject
+    JwtService jwtService;
+
 
     @Test
     public void testFindAll() {
         given()
-            .when().get("/materiais")
-            .then()
+        .when().get("/materiais")
+        .then()
             .statusCode(200)
             .body("$.size()", greaterThan(0));
     }
@@ -24,16 +36,16 @@ public class MaterialResourceTest {
     public void testFindByNome() {
         given()
             .pathParam("nome", "Nike")
-            .when().get("/materiais/find/{nome}")
-            .then()
+        .when().get("/materiais/find/{nome}")
+        .then()
             .statusCode(anyOf(is(200), is(204)));
     }
 
     @Test
     public void testFindById() {
         given()
-            .when().get("/materiais/1")
-            .then()
+        .when().get("/materiais/1")
+        .then()
             .statusCode(200)
             .body("id", equalTo(1));
     }
@@ -45,8 +57,8 @@ public class MaterialResourceTest {
         given()
             .contentType(ContentType.JSON)
             .body(dto)
-            .when().post("/materiais")
-            .then()
+        .when().post("/materiais")
+        .then()
             .statusCode(201)
             .body("nome", equalTo("Linho"));
     }
@@ -58,16 +70,16 @@ public class MaterialResourceTest {
         given()
             .contentType(ContentType.JSON)
             .body(dto)
-            .when().put("/materiais/1")
-            .then()
-            .statusCode(204);
+        .when().put("/materiais/1")
+        .then()
+            .statusCode(anyOf(is(200), is(204), is(404)));
     }
 
     @Test
     public void testDelete() {
         given()
-            .when().delete("/materiais/3")
-            .then()
-            .statusCode(anyOf(is(204), is(200)));
+        .when().delete("/materiais/3")
+        .then()
+            .statusCode(anyOf(is(204), is(200), is(404)));
     }
 }

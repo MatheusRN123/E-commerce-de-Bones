@@ -6,25 +6,18 @@ import java.util.List;
 
 import br.unitins.topicos1.bone.dto.BoneDTO;
 import br.unitins.topicos1.bone.dto.BoneDTOResponse;
-import br.unitins.topicos1.bone.model.Bone;
-import br.unitins.topicos1.bone.model.Estampa;
-import br.unitins.topicos1.bone.model.Estoque;
-import br.unitins.topicos1.bone.model.Marca;
-import br.unitins.topicos1.bone.model.Material;
-import br.unitins.topicos1.bone.model.Modelo;
-import br.unitins.topicos1.bone.repository.BoneRepository;
-import br.unitins.topicos1.bone.repository.EstampaRepository;
-import br.unitins.topicos1.bone.repository.EstoqueRepository;
-import br.unitins.topicos1.bone.repository.MarcaRepository;
-import br.unitins.topicos1.bone.repository.MaterialRepository;
-import br.unitins.topicos1.bone.repository.ModeloRepository;
+import br.unitins.topicos1.bone.model.*;
+import br.unitins.topicos1.bone.repository.*;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
+import org.jboss.logging.Logger;
 
 @ApplicationScoped
 public class BoneServiceImpl implements BoneService {
+
+    private static final Logger LOG = Logger.getLogger(BoneServiceImpl.class);
 
     @Inject
     BoneRepository repository;
@@ -46,26 +39,34 @@ public class BoneServiceImpl implements BoneService {
 
     @Override
     public List<BoneDTOResponse> findAll() {
-        return repository
-                    .listAll()
-                    .stream()
-                    .map(m -> BoneDTOResponse.valueOf(m))
-                    .toList();
+        LOG.info("Buscando todos os bonés");
+        List<BoneDTOResponse> response = repository
+                .listAll()
+                .stream()
+                .map(BoneDTOResponse::valueOf)
+                .toList();
+        LOG.debugf("Total de bonés encontrados: %d", response.size());
+        return response;
     }
 
     @Override
     public List<BoneDTOResponse> findByNome(String nome) {
-        return repository
-                    .findByNome(nome)
-                    .stream()
-                    .map(m -> BoneDTOResponse.valueOf(m))
-                    .toList();
+        LOG.infof("Buscando bonés pelo nome: %s", nome);
+        List<BoneDTOResponse> response = repository
+                .findByNome(nome)
+                .stream()
+                .map(BoneDTOResponse::valueOf)
+                .toList();
+        LOG.debugf("Bonés encontrados com nome '%s': %d", nome, response.size());
+        return response;
     }
 
     @Override
     public BoneDTOResponse findById(Long id) {
+        LOG.infof("Buscando boné pelo ID: %d", id);
         Bone bone = repository.findById(id);
-        if(bone == null){
+        if (bone == null) {
+            LOG.warnf("Boné com ID %d não encontrado", id);
             return null;
         }
         return BoneDTOResponse.valueOf(bone);
@@ -74,127 +75,147 @@ public class BoneServiceImpl implements BoneService {
     @Override
     @Transactional
     public BoneDTOResponse create(BoneDTO dto) {
+        LOG.infof("Criando novo boné: %s", dto.nome());
+        try {
+            Bone bone = new Bone();
+            bone.setNome(dto.nome());
+            bone.setCor(dto.cor());
+            bone.setCategoriaAba(dto.categoriaAba());
+            bone.setTamanhoAba(dto.tamanhoAba());
+            bone.setProfundidade(dto.profundidade());
+            bone.setCircunferencia(dto.circunferencia());
+            bone.setBordado(dto.bordado());
 
-        Bone bone = new Bone();
-        bone.setNome(dto.nome());
-        bone.setCor(dto.cor());
-        bone.setCategoriaAba(dto.categoriaAba());
-        bone.setTamanhoAba(dto.tamanhoAba());
-        bone.setProfundidade(dto.profundidade());
-        bone.setCircunferencia(dto.circunferencia());
-        bone.setBordado(dto.bordado());
+            Material material = repositoryMaterial.findById(dto.idMaterial());
+            bone.setMaterial(material);
 
-        Material material = repositoryMaterial.findById(dto.idMaterial());
-        bone.setMaterial(material);
+            Marca marca = repositoryMarca.findById(dto.idMarca());
+            bone.setMarca(marca);
 
-        Marca marca = repositoryMarca.findById(dto.idMarca());
-        bone.setMarca(marca);
+            Modelo modelo = repositoryModelo.findById(dto.idModelo());
+            bone.setModelo(modelo);
 
-        Modelo modelo = repositoryModelo.findById(dto.idModelo());
-        bone.setModelo(modelo);
-
-        Estoque estoque = new Estoque();
-        int quantidade = (dto.quantidadeEstoque() != null) ? dto.quantidadeEstoque() : 0;
-        estoque.setQuantidade(quantidade);
-        estoque.setDataAtualizacao(LocalDate.now());
-        repositoryEstoque.persist(estoque);
-        
-        bone.setEstoque(estoque);
-
-        repository.persist(bone);
-
-        if (bone.getEstampas() == null) {
-            bone.setEstampas(new ArrayList<>());
-        }
-
-        if (dto.idsEstampas() == null || dto.idsEstampas().isEmpty()) {
-            bone.getEstampas().clear();
-            return BoneDTOResponse.valueOf(bone);
-        }
-
-        List<Estampa> estampas = repositoryEstampa.findByIds(dto.idsEstampas());
-
-        if (estampas.size() != dto.idsEstampas().size()) {
-
-            throw new IllegalArgumentException("Uma ou mais estampas informadas não existem.");
-        }
-
-        bone.setEstampas(estampas);
-
-        return BoneDTOResponse.valueOf(bone);
-    }
-
-    @Override
-    @Transactional
-    public void update(Long id, BoneDTO dto) {
-
-        Bone bone = repository.findById(id);
-
-        if(bone == null){
-            throw new NotFoundException("Boné não encontrado");
-        }
-
-        bone.setNome(dto.nome());
-        bone.setCor(dto.cor());
-        bone.setCategoriaAba(dto.categoriaAba());
-        bone.setTamanhoAba(dto.tamanhoAba());
-        bone.setProfundidade(dto.profundidade());
-        bone.setCircunferencia(dto.circunferencia());
-        bone.setBordado(dto.bordado());
-
-        Material material = repositoryMaterial.findById(dto.idMaterial());
-        bone.setMaterial(material);
-
-        Marca marca = repositoryMarca.findById(dto.idMarca());
-        bone.setMarca(marca);
-
-        Modelo modelo = repositoryModelo.findById(dto.idModelo());
-        bone.setModelo(modelo);
-
-
-        if (bone.getEstampas() == null) {
-            bone.setEstampas(new ArrayList<>());
-        }
-
-        if (dto.idsEstampas() == null || dto.idsEstampas().isEmpty()) {
-
-            bone.getEstampas().clear();
-            return;
-        }
-
-        List<Estampa> estampas = repositoryEstampa.findByIds(dto.idsEstampas());
-
-        if (estampas.size() != dto.idsEstampas().size()) {
-
-            throw new IllegalArgumentException("Uma ou mais estampas informadas não existem.");
-        }
-
-        bone.setEstampas(estampas);
-        
-        Estoque estoque = bone.getEstoque();
-    
-        if (estoque == null) {
-            estoque = new Estoque();
+            Estoque estoque = new Estoque();
             int quantidade = (dto.quantidadeEstoque() != null) ? dto.quantidadeEstoque() : 0;
             estoque.setQuantidade(quantidade);
             estoque.setDataAtualizacao(LocalDate.now());
             repositoryEstoque.persist(estoque);
             bone.setEstoque(estoque);
-        } else {
-            if(dto.quantidadeEstoque() != null){
-                estoque.setQuantidade(dto.quantidadeEstoque());
+
+            repository.persist(bone);
+
+            if (bone.getEstampas() == null) {
+                bone.setEstampas(new ArrayList<>());
             }
-            estoque.setDataAtualizacao(LocalDate.now());
+
+            if (dto.idsEstampas() == null || dto.idsEstampas().isEmpty()) {
+                bone.getEstampas().clear();
+                LOG.debug("Nenhuma estampa foi informada para o boné");
+                return BoneDTOResponse.valueOf(bone);
+            }
+
+            List<Estampa> estampas = repositoryEstampa.findByIds(dto.idsEstampas());
+
+            if (estampas.size() != dto.idsEstampas().size()) {
+                LOG.error("Uma ou mais estampas informadas não existem.");
+                throw new IllegalArgumentException("Uma ou mais estampas informadas não existem.");
+            }
+
+            bone.setEstampas(estampas);
+            LOG.infof("Boné '%s' criado com sucesso com %d estampas", bone.getNome(), estampas.size());
+            return BoneDTOResponse.valueOf(bone);
+
+        } catch (Exception e) {
+            LOG.error("Erro ao criar boné", e);
+            throw e;
         }
-    
+    }
+
+    @Override
+    @Transactional
+    public void update(Long id, BoneDTO dto) {
+        LOG.infof("Atualizando boné com ID: %d", id);
+        Bone bone = repository.findById(id);
+
+        if (bone == null) {
+            LOG.warnf("Boné com ID %d não encontrado para atualização", id);
+            throw new NotFoundException("Boné não encontrado");
+        }
+
+        try {
+            bone.setNome(dto.nome());
+            bone.setCor(dto.cor());
+            bone.setCategoriaAba(dto.categoriaAba());
+            bone.setTamanhoAba(dto.tamanhoAba());
+            bone.setProfundidade(dto.profundidade());
+            bone.setCircunferencia(dto.circunferencia());
+            bone.setBordado(dto.bordado());
+
+            Material material = repositoryMaterial.findById(dto.idMaterial());
+            bone.setMaterial(material);
+
+            Marca marca = repositoryMarca.findById(dto.idMarca());
+            bone.setMarca(marca);
+
+            Modelo modelo = repositoryModelo.findById(dto.idModelo());
+            bone.setModelo(modelo);
+
+            if (bone.getEstampas() == null) {
+                bone.setEstampas(new ArrayList<>());
+            }
+
+            if (dto.idsEstampas() == null || dto.idsEstampas().isEmpty()) {
+                bone.getEstampas().clear();
+                LOG.debug("Limpeza de estampas do boné realizada");
+            } else {
+                List<Estampa> estampas = repositoryEstampa.findByIds(dto.idsEstampas());
+                if (estampas.size() != dto.idsEstampas().size()) {
+                    LOG.error("Uma ou mais estampas informadas não existem.");
+                    throw new IllegalArgumentException("Uma ou mais estampas informadas não existem.");
+                }
+                bone.setEstampas(estampas);
+                LOG.debugf("Atualizadas %d estampas para o boné", estampas.size());
+            }
+
+            Estoque estoque = bone.getEstoque();
+            if (estoque == null) {
+                estoque = new Estoque();
+                int quantidade = (dto.quantidadeEstoque() != null) ? dto.quantidadeEstoque() : 0;
+                estoque.setQuantidade(quantidade);
+                estoque.setDataAtualizacao(LocalDate.now());
+                repositoryEstoque.persist(estoque);
+                bone.setEstoque(estoque);
+                LOG.debug("Estoque inicial criado para o boné");
+            } else {
+                if (dto.quantidadeEstoque() != null) {
+                    estoque.setQuantidade(dto.quantidadeEstoque());
+                }
+                estoque.setDataAtualizacao(LocalDate.now());
+                LOG.debug("Estoque atualizado para o boné");
+            }
+
+            LOG.infof("Boné com ID %d atualizado com sucesso", id);
+
+        } catch (Exception e) {
+            LOG.errorf(e, "Erro ao atualizar boné com ID %d", id);
+            throw e;
+        }
     }
 
     @Override
     @Transactional
     public void delete(Long id) {
-
-        repository.deleteById(id);
-
+        LOG.infof("Excluindo boné com ID: %d", id);
+        try {
+            boolean deleted = repository.deleteById(id);
+            if (deleted) {
+                LOG.infof("Boné com ID %d excluído com sucesso", id);
+            } else {
+                LOG.warnf("Boné com ID %d não encontrado para exclusão", id);
+            }
+        } catch (Exception e) {
+            LOG.errorf(e, "Erro ao excluir boné com ID %d", id);
+            throw e;
+        }
     }
-    
 }

@@ -1,16 +1,25 @@
-package br.unitins.topicos1.bone.resource;
+package br.unitins.topicos1.bone.resources;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.*;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 
 import br.unitins.topicos1.bone.dto.EstampaBordadaDTO;
+import br.unitins.topicos1.bone.service.JwtService;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 
+import jakarta.inject.Inject;
+
 @QuarkusTest
+@TestInstance(Lifecycle.PER_CLASS)
 public class EstampaBordadaResourceTest {
+
+    @Inject
+    JwtService jwtService;
 
     @Test
     public void testCreate() {
@@ -26,8 +35,8 @@ public class EstampaBordadaResourceTest {
         given()
             .contentType(ContentType.JSON)
             .body(dto)
-            .when().post("/estampas/bordada")
-            .then()
+        .when().post("/estampas/bordada")
+        .then()
             .statusCode(anyOf(is(201), is(200)))
             .body("nome", is("EstampaBordadaTeste"));
     }
@@ -47,8 +56,8 @@ public class EstampaBordadaResourceTest {
             .contentType(ContentType.JSON)
             .body(dto)
             .pathParam("id", 1)
-            .when().put("/estampas/bordada/{id}")
-            .then()
+        .when().put("/estampas/bordada/{id}")
+        .then()
             .statusCode(anyOf(is(200), is(204), is(404)));
     }
 
@@ -56,8 +65,8 @@ public class EstampaBordadaResourceTest {
     public void testDelete() {
         given()
             .pathParam("id", 3)
-            .when().delete("/estampas/bordada/{id}")
-            .then()
+        .when().delete("/estampas/bordada/{id}")
+        .then()
             .statusCode(anyOf(is(204), is(404)));
     }
 }

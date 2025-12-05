@@ -8,9 +8,12 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
+import org.jboss.logging.Logger;
 
 @ApplicationScoped
 public class EstampaDigitalServiceImpl implements EstampaDigitalService {
+
+    private static final Logger LOG = Logger.getLogger(EstampaDigitalServiceImpl.class);
 
     @Inject
     EstampaDigitalRepository repository;
@@ -18,33 +21,56 @@ public class EstampaDigitalServiceImpl implements EstampaDigitalService {
     @Override
     @Transactional
     public EstampaDigitalDTOResponse create(EstampaDigitalDTO dto) {
-        EstampaDigital estampa = new EstampaDigital();
+        LOG.infof("Criando estampa digital: %s", dto.nome());
+        try {
+            EstampaDigital estampa = new EstampaDigital();
+            estampa.setNome(dto.nome());
+            estampa.setPosicao(dto.posicao());
+            estampa.setDescricao(dto.descricao());
+            estampa.setResolucao(dto.resolucao());
 
-        estampa.setNome(dto.nome());
-        estampa.setPosicao(dto.posicao());
-        estampa.setDescricao(dto.descricao());
-        estampa.setResolucao(dto.resolucao());
-
-        repository.persist(estampa);
-        return EstampaDigitalDTOResponse.valueOf(estampa);
+            repository.persist(estampa);
+            LOG.infof("Estampa digital '%s' criada com sucesso", dto.nome());
+            return EstampaDigitalDTOResponse.valueOf(estampa);
+        } catch (Exception e) {
+            LOG.errorf(e, "Erro ao criar estampa digital: %s", dto.nome());
+            throw e;
+        }
     }
 
     @Override
     @Transactional
     public void update(Long id, EstampaDigitalDTO dto) {
-        EstampaDigital estampa = repository.findById(id);
-        if (estampa == null){
-            throw new NotFoundException("Estampa digital não encontrada");
+        LOG.infof("Atualizando estampa digital ID: %d", id);
+        try {
+            EstampaDigital estampa = repository.findById(id);
+            if (estampa == null) {
+                LOG.warnf("Estampa digital ID %d não encontrada para atualização", id);
+                throw new NotFoundException("Estampa digital não encontrada");
+            }
+
+            estampa.setNome(dto.nome());
+            estampa.setPosicao(dto.posicao());
+            estampa.setDescricao(dto.descricao());
+            estampa.setResolucao(dto.resolucao());
+
+            LOG.infof("Estampa digital ID %d atualizada com sucesso", id);
+        } catch (Exception e) {
+            LOG.errorf(e, "Erro ao atualizar estampa digital ID: %d", id);
+            throw e;
         }
-        estampa.setNome(dto.nome());
-        estampa.setPosicao(dto.posicao());
-        estampa.setDescricao(dto.descricao());
-        estampa.setResolucao(dto.resolucao());
     }
 
     @Override
     @Transactional
     public void delete(Long id) {
-        repository.deleteById(id);
+        LOG.infof("Deletando estampa digital ID: %d", id);
+        try {
+            repository.deleteById(id);
+            LOG.infof("Estampa digital ID %d deletada com sucesso", id);
+        } catch (Exception e) {
+            LOG.errorf(e, "Erro ao deletar estampa digital ID: %d", id);
+            throw e;
+        }
     }
 }

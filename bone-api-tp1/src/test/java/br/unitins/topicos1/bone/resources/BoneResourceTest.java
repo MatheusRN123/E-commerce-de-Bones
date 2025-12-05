@@ -1,4 +1,4 @@
-package br.unitins.topicos1.bone.resource;
+package br.unitins.topicos1.bone.resources;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.*;
@@ -7,12 +7,14 @@ import static org.hamcrest.Matchers.anything;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
 import br.unitins.topicos1.bone.dto.BoneDTO;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 
 @QuarkusTest
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class BoneResourceTest {
 
     @Test
