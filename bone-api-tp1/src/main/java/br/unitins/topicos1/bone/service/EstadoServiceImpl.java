@@ -12,13 +12,19 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
+<<<<<<< HEAD
 import org.jboss.logging.Logger;
+=======
+>>>>>>> a47f27e82323fbf2d3a412623eb607e53f435613
 
 @ApplicationScoped
 public class EstadoServiceImpl implements EstadoService {
 
+<<<<<<< HEAD
     private static final Logger LOG = Logger.getLogger(EstadoServiceImpl.class);
 
+=======
+>>>>>>> a47f27e82323fbf2d3a412623eb607e53f435613
     @Inject
     EstadoRepository estadoRepository;
 
@@ -27,6 +33,7 @@ public class EstadoServiceImpl implements EstadoService {
 
     @Override
     public List<EstadoDTOResponse> findAll() {
+<<<<<<< HEAD
         LOG.info("Buscando todos os estados");
         try {
             var list = estadoRepository.listAll()
@@ -39,10 +46,18 @@ public class EstadoServiceImpl implements EstadoService {
             LOG.error("Erro ao buscar todos os estados", e);
             throw e;
         }
+=======
+        return estadoRepository
+                .listAll()
+                .stream()
+                .map(EstadoDTOResponse::valueOf)
+                .toList();
+>>>>>>> a47f27e82323fbf2d3a412623eb607e53f435613
     }
 
     @Override
     public EstadoDTOResponse findById(Long id) {
+<<<<<<< HEAD
         LOG.infof("Buscando estado pelo ID: %d", id);
         try {
             Estado estado = estadoRepository.findById(id);
@@ -56,10 +71,19 @@ public class EstadoServiceImpl implements EstadoService {
             LOG.errorf(e, "Erro ao buscar estado pelo ID: %d", id);
             throw e;
         }
+=======
+        Estado estado = estadoRepository.findById(id);
+
+        if (estado == null)
+            throw new NotFoundException("Estado não encontrado");
+
+        return EstadoDTOResponse.valueOf(estado);
+>>>>>>> a47f27e82323fbf2d3a412623eb607e53f435613
     }
 
     @Override
     public List<EstadoDTOResponse> findByNome(String nome) {
+<<<<<<< HEAD
         LOG.infof("Buscando estados pelo nome: %s", nome);
         try {
             var list = estadoRepository.findByNome(nome)
@@ -88,11 +112,28 @@ public class EstadoServiceImpl implements EstadoService {
             LOG.errorf(e, "Erro ao buscar estados pela sigla: %s", sigla);
             throw e;
         }
+=======
+        return estadoRepository
+                .find("LOWER(nome) LIKE LOWER(?1)", "%" + nome + "%")
+                .list()
+                .stream()
+                .map(EstadoDTOResponse::valueOf)
+                .toList();
+    }
+
+    @Override
+    public List<EstadoDTOResponse> findBySigla(String sigla){
+        return estadoRepository.findBySigla(sigla)
+        .stream()
+        .map(EstadoDTOResponse::valueOf).
+        toList();
+>>>>>>> a47f27e82323fbf2d3a412623eb607e53f435613
     }
 
     @Override
     @Transactional
     public EstadoDTOResponse create(EstadoDTO dto) {
+<<<<<<< HEAD
         LOG.infof("Criando estado: %s (%s)", dto.nome(), dto.sigla());
         try {
             Estado estado = new Estado();
@@ -115,11 +156,34 @@ public class EstadoServiceImpl implements EstadoService {
             LOG.errorf(e, "Erro ao criar estado: %s (%s)", dto.nome(), dto.sigla());
             throw e;
         }
+=======
+
+        Estado estado = new Estado();
+        estado.setNome(dto.nome());
+        estado.setSigla(dto.sigla());
+
+        // associa cidades
+        if (dto.idsCidades() != null && !dto.idsCidades().isEmpty()) {
+
+            List<Cidade> cidades = cidadeRepository.findByIds(dto.idsCidades());
+
+            if (cidades.size() != dto.idsCidades().size()) {
+                throw new IllegalArgumentException("Uma ou mais cidades informadas não existem.");
+            }
+
+            estado.setCidades(cidades);
+        }
+
+        estadoRepository.persist(estado);
+
+        return EstadoDTOResponse.valueOf(estado);
+>>>>>>> a47f27e82323fbf2d3a412623eb607e53f435613
     }
 
     @Override
     @Transactional
     public void update(Long id, EstadoDTO dto) {
+<<<<<<< HEAD
         LOG.infof("Atualizando estado ID: %d", id);
         try {
             Estado estado = estadoRepository.findById(id);
@@ -149,11 +213,35 @@ public class EstadoServiceImpl implements EstadoService {
             LOG.errorf(e, "Erro ao atualizar estado ID: %d", id);
             throw e;
         }
+=======
+
+        Estado estado = estadoRepository.findById(id);
+
+        if (estado == null)
+            throw new NotFoundException("Estado não encontrado");
+
+        estado.setNome(dto.nome());
+        estado.setSigla(dto.sigla());
+
+        if (dto.idsCidades() == null || dto.idsCidades().isEmpty()) {
+            estado.getCidades().clear();
+            return;
+        }
+
+        List<Cidade> cidades = cidadeRepository.findByIds(dto.idsCidades());
+
+        if (cidades.size() != dto.idsCidades().size()) {
+            throw new IllegalArgumentException("Uma ou mais cidades informadas não existem.");
+        }
+
+        estado.setCidades(cidades);
+>>>>>>> a47f27e82323fbf2d3a412623eb607e53f435613
     }
 
     @Override
     @Transactional
     public void delete(Long id) {
+<<<<<<< HEAD
         LOG.infof("Deletando estado ID: %d", id);
         try {
             estadoRepository.deleteById(id);
@@ -162,5 +250,12 @@ public class EstadoServiceImpl implements EstadoService {
             LOG.errorf(e, "Erro ao deletar estado ID: %d", id);
             throw e;
         }
+=======
+
+        boolean removed = estadoRepository.deleteById(id);
+
+        if (!removed)
+            throw new NotFoundException("Estado não encontrado");
+>>>>>>> a47f27e82323fbf2d3a412623eb607e53f435613
     }
 }

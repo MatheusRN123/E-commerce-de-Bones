@@ -2,13 +2,19 @@ package br.unitins.topicos1.bone.model;
 
 import java.util.List;
 
+<<<<<<< HEAD
 import jakarta.persistence.Entity;
+=======
+>>>>>>> a47f27e82323fbf2d3a412623eb607e53f435613
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 
+<<<<<<< HEAD
 @Entity
+=======
+>>>>>>> a47f27e82323fbf2d3a412623eb607e53f435613
 public class Estado {
 
     @Id

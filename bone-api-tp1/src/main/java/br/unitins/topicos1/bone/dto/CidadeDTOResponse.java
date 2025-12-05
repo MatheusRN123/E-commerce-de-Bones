@@ -9,7 +9,11 @@ public record CidadeDTOResponse(
     Long id,
     String nome,
     String siglaEstado,
+<<<<<<< HEAD
     List<EnderecoDTOResponse> enderecos
+=======
+    List<EnderecoDTOResponse> cidades
+>>>>>>> a47f27e82323fbf2d3a412623eb607e53f435613
 ) {
     public static CidadeDTOResponse valueOf(Cidade cidade){
 

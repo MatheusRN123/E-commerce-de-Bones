@@ -5,6 +5,7 @@ import java.util.List;
 import br.unitins.topicos1.bone.dto.CidadeDTO;
 import br.unitins.topicos1.bone.dto.CidadeDTOResponse;
 import br.unitins.topicos1.bone.model.Cidade;
+<<<<<<< HEAD
 import br.unitins.topicos1.bone.model.Estado;
 import br.unitins.topicos1.bone.repository.CidadeRepository;
 import br.unitins.topicos1.bone.repository.EstadoRepository;
@@ -68,10 +69,50 @@ public class CidadeServiceImpl implements CidadeService {
                 .toList();
         LOG.debugf("Total de cidades encontradas: %d", response.size());
         return response;
+=======
+import br.unitins.topicos1.bone.repository.CidadeRepository;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+
+@ApplicationScoped
+public class CidadeServiceImpl implements CidadeService {
+    
+    @Inject
+    CidadeRepository repository;
+
+    @Override
+    public List<CidadeDTOResponse> findAll(){
+        return repository
+                    .listAll()
+                    .stream()
+                    .map(m -> CidadeDTOResponse.valueOf(m))
+                    .toList();
+    }
+
+    @Override
+    public List<CidadeDTOResponse> findByNome(String nome){
+        return repository
+                    .findByNome(nome)
+                    .stream().
+                    map(m -> CidadeDTOResponse.valueOf(m))
+                    .toList();
+    }
+
+    @Override
+    public CidadeDTOResponse findById(Long id){
+        return CidadeDTOResponse.valueOf(repository.findById(id));
+    }
+
+    @Override
+    public List<CidadeDTOResponse> findByIds(List<Long> ids){
+        return repository.findByIds(ids).stream().map(m -> CidadeDTOResponse.valueOf(m)).toList();
+>>>>>>> a47f27e82323fbf2d3a412623eb607e53f435613
     }
 
     @Override
     @Transactional
+<<<<<<< HEAD
     public CidadeDTOResponse create(CidadeDTO dto) {
         LOG.infof("Criando nova cidade: %s", dto.nome());
         try {
@@ -89,10 +130,22 @@ public class CidadeServiceImpl implements CidadeService {
             LOG.errorf(e, "Erro ao criar cidade: %s", dto.nome());
             throw e;
         }
+=======
+    public CidadeDTOResponse create(CidadeDTO dto){
+
+        Cidade marca = new Cidade();
+
+        marca.setNome(dto.nome());
+
+        repository.persist(marca);
+
+        return CidadeDTOResponse.valueOf(marca);
+>>>>>>> a47f27e82323fbf2d3a412623eb607e53f435613
     }
 
     @Override
     @Transactional
+<<<<<<< HEAD
     public void update(Long id, CidadeDTO dto) {
         LOG.infof("Atualizando cidade ID: %d", id);
         try {
@@ -109,10 +162,18 @@ public class CidadeServiceImpl implements CidadeService {
             LOG.errorf(e, "Erro ao atualizar cidade ID: %d", id);
             throw e;
         }
+=======
+    public void update(Long id, CidadeDTO dto){
+        
+        Cidade marca = repository.findById(id);
+
+        marca.setNome(dto.nome());
+>>>>>>> a47f27e82323fbf2d3a412623eb607e53f435613
     }
 
     @Override
     @Transactional
+<<<<<<< HEAD
     public void delete(Long id) {
         LOG.infof("Excluindo cidade ID: %d", id);
         try {
@@ -126,5 +187,11 @@ public class CidadeServiceImpl implements CidadeService {
             LOG.errorf(e, "Erro ao excluir cidade ID: %d", id);
             throw e;
         }
+=======
+    public void delete(Long id){
+
+        repository.deleteById(id);
+
+>>>>>>> a47f27e82323fbf2d3a412623eb607e53f435613
     }
 }

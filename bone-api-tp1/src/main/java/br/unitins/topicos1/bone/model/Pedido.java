@@ -8,7 +8,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+<<<<<<< HEAD
 import jakarta.persistence.JoinColumn;
+=======
+>>>>>>> a47f27e82323fbf2d3a412623eb607e53f435613
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
@@ -23,6 +26,7 @@ public class Pedido {
     private LocalDateTime data;
 
     @ManyToOne
+<<<<<<< HEAD
     @JoinColumn(name = "id_usuario")
     private Usuario usuario;
 
@@ -36,6 +40,17 @@ public class Pedido {
 
 
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
+=======
+    private Usuario usuario;
+
+    @ManyToOne
+    private Endereco endereco;
+
+    @OneToOne(mappedBy = "pedido", cascade = CascadeType.ALL)
+    private Pagamento pagamento;
+
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
+>>>>>>> a47f27e82323fbf2d3a412623eb607e53f435613
     private List<ItemPedido> itens;
 
     public Long getId() {
