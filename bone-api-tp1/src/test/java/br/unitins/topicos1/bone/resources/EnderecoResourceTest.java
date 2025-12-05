@@ -4,18 +4,19 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*; // Import correto para is(), anyOf(), greaterThanOrEqualTo, etc.
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 
 import br.unitins.topicos1.bone.dto.EnderecoDTO;
 import br.unitins.topicos1.bone.service.HashService;
 import br.unitins.topicos1.bone.service.JwtService;
-import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 
 import jakarta.inject.Inject;
 
+import io.quarkus.test.security.TestSecurity;
+import io.quarkus.test.junit.QuarkusTest;
+
 @QuarkusTest
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestSecurity(authorizationEnabled = false)
 public class EnderecoResourceTest {
 
     @Inject

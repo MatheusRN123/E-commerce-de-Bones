@@ -4,18 +4,18 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.*;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
 
 import br.unitins.topicos1.bone.dto.EstampaBordadaDTO;
 import br.unitins.topicos1.bone.service.JwtService;
-import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 
 import jakarta.inject.Inject;
 
+import io.quarkus.test.security.TestSecurity;
+import io.quarkus.test.junit.QuarkusTest;
+
 @QuarkusTest
-@TestInstance(Lifecycle.PER_CLASS)
+@TestSecurity(authorizationEnabled = false)
 public class EstampaBordadaResourceTest {
 
     @Inject

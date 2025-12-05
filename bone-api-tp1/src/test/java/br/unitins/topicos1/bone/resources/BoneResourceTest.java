@@ -7,14 +7,14 @@ import static org.hamcrest.Matchers.anything;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 
 import br.unitins.topicos1.bone.dto.BoneDTO;
-import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
+import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.security.TestSecurity;
 
 @QuarkusTest
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestSecurity(authorizationEnabled = false)
 public class BoneResourceTest {
 
     @Test

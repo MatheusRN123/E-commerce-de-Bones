@@ -7,12 +7,15 @@ import org.junit.jupiter.api.Test;
 
 import br.unitins.topicos1.bone.dto.EstadoDTO;
 import br.unitins.topicos1.bone.service.JwtService;
-import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 
 import jakarta.inject.Inject;
 
+import io.quarkus.test.security.TestSecurity;
+import io.quarkus.test.junit.QuarkusTest;
+
 @QuarkusTest
+@TestSecurity(authorizationEnabled = false)
 public class EstadoResourceTest {
 
     @Inject

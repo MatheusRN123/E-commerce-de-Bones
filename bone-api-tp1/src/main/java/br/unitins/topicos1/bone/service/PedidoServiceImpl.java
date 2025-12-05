@@ -5,7 +5,6 @@ import java.util.List;
 
 import br.unitins.topicos1.bone.dto.PedidoDTO;
 import br.unitins.topicos1.bone.dto.PedidoDTOResponse;
-import br.unitins.topicos1.bone.dto.PixDTO;
 import br.unitins.topicos1.bone.dto.PagamentoDTO;
 import br.unitins.topicos1.bone.dto.BoletoDTO;
 import br.unitins.topicos1.bone.dto.CartaoDTO;

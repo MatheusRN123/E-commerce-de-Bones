@@ -2,16 +2,17 @@ package br.unitins.topicos1.bone.resources;
 
 import br.unitins.topicos1.bone.dto.CidadeDTO;
 import br.unitins.topicos1.bone.service.JwtService;
-import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
+import io.quarkus.test.security.TestSecurity;
+import io.quarkus.test.junit.QuarkusTest;
+
 @QuarkusTest
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestSecurity(authorizationEnabled = false)
 public class CidadeResourceTest {
 
     @Inject

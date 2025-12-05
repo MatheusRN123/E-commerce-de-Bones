@@ -5,17 +5,17 @@ import static org.hamcrest.Matchers.*;
 import static org.hamcrest.CoreMatchers.anyOf;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
 
 import br.unitins.topicos1.bone.dto.ModeloDTO;
 import br.unitins.topicos1.bone.service.JwtService;
-import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import jakarta.inject.Inject;
 
+import io.quarkus.test.security.TestSecurity;
+import io.quarkus.test.junit.QuarkusTest;
+
 @QuarkusTest
-@TestInstance(Lifecycle.PER_CLASS)
+@TestSecurity(authorizationEnabled = false)
 public class ModeloResourceTest {
 
 

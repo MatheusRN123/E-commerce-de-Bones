@@ -1,13 +1,16 @@
 package br.unitins.topicos1.bone.resources;
 
 import br.unitins.topicos1.bone.dto.AuthDTO;
-import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.notNullValue;
 
+import io.quarkus.test.security.TestSecurity;
+import io.quarkus.test.junit.QuarkusTest;
+
 @QuarkusTest
+@TestSecurity(authorizationEnabled = false)
 public class AuthResourceTest {
 
     @Test

@@ -1,4 +1,4 @@
-package br.unitins.topicos1.sga.exception;
+package br.unitins.topicos1.bone.exception;
 
 import java.time.OffsetDateTime;
 import java.util.List;
