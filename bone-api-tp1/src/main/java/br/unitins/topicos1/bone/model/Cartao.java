@@ -1,18 +1,12 @@
 package br.unitins.topicos1.bone.model;
 
-<<<<<<< HEAD
 import jakarta.persistence.Column;
-=======
->>>>>>> a47f27e82323fbf2d3a412623eb607e53f435613
 import jakarta.persistence.Entity;
 
 @Entity
 public class Cartao extends Pagamento{
     
-<<<<<<< HEAD
     @Column(name = "nome_titular")
-=======
->>>>>>> a47f27e82323fbf2d3a412623eb607e53f435613
     private String nomeTitular;
     private String numero;
     private String validade;

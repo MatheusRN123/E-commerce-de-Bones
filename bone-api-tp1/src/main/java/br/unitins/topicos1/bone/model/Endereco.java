@@ -4,21 +4,14 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-<<<<<<< HEAD
 import jakarta.persistence.JoinColumn;
-=======
->>>>>>> a47f27e82323fbf2d3a412623eb607e53f435613
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 
 @Entity
 public class Endereco {
 
-<<<<<<< HEAD
     @Id
-=======
-    @Id 
->>>>>>> a47f27e82323fbf2d3a412623eb607e53f435613
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -27,10 +20,7 @@ public class Endereco {
     private String numero;
 
     @ManyToOne
-<<<<<<< HEAD
     @JoinColumn(name = "id_cidade")
-=======
->>>>>>> a47f27e82323fbf2d3a412623eb607e53f435613
     private Cidade cidade;
 
     @OneToOne(mappedBy = "endereco")
