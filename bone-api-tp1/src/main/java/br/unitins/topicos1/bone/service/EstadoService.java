@@ -7,7 +7,6 @@ import br.unitins.topicos1.bone.dto.EstadoDTOResponse;
 
 public interface EstadoService {
     List<EstadoDTOResponse> findAll();
-    List<EstadoDTOResponse> findByNome(String nome);
     List<EstadoDTOResponse> findBySigla(String sigla);
     EstadoDTOResponse findById(Long id);
     EstadoDTOResponse create(EstadoDTO dto);

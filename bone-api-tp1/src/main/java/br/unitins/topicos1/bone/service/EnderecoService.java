@@ -7,7 +7,6 @@ import br.unitins.topicos1.bone.dto.EnderecoDTOResponse;
 
 public interface EnderecoService {
     List<EnderecoDTOResponse> findAll();
-    List<EnderecoDTOResponse> findByCep(String cep);
     EnderecoDTOResponse findById(Long id);
     EnderecoDTOResponse create(EnderecoDTO dto);
     void update(Long id, EnderecoDTO dto);

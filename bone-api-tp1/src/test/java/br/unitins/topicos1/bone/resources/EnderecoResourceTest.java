@@ -80,8 +80,8 @@ public class EnderecoResourceTest {
             "87654321",
             "Rua Atualizada",
             "15",
-            2L,
-            2L
+            2,
+            2
         );
 
         given()

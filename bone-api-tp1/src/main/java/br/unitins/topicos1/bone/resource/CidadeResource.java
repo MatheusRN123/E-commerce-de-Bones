@@ -1,7 +1,5 @@
 package br.unitins.topicos1.bone.resource;
 
-import java.util.List;
-
 import br.unitins.topicos1.bone.dto.CidadeDTO;
 import br.unitins.topicos1.bone.dto.CidadeDTOResponse;
 import br.unitins.topicos1.bone.service.CidadeService;
@@ -13,8 +11,8 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
@@ -47,7 +45,7 @@ public class CidadeResource {
     @GET
     @Path("/find/{nome}")
     @RolesAllowed({"ADM", "USER"})
-    public Response buscarPorNome(String nome) {
+    public Response buscarPorNome(@PathParam("nome") String nome) {
         LOG.infof("Requisição para buscar cidades pelo nome: %s", nome);
         try {
             var cidades = service.findByNome(nome);
@@ -62,7 +60,7 @@ public class CidadeResource {
     @GET
     @Path("/{id}")
     @RolesAllowed({"ADM", "USER"})
-    public Response buscarPorId(Long id) {
+    public Response buscarPorId(@PathParam("id") Long id) {
         LOG.infof("Requisição para buscar cidade pelo ID: %d", id);
         try {
             CidadeDTOResponse response = service.findById(id);
@@ -74,25 +72,6 @@ public class CidadeResource {
             return Response.ok(response).build();
         } catch (Exception e) {
             LOG.errorf(e, "Erro ao buscar cidade pelo ID: %d", id);
-            return Response.status(Status.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    @GET
-    @Path("/{ids}")
-    @RolesAllowed({"ADM", "USER"})
-    public Response buscarPorIds(@QueryParam("ids") List<Long> ids) {
-        LOG.infof("Requisição para buscar cidades pelos IDs: %s", ids);
-        try {
-            List<CidadeDTOResponse> response = service.findByIds(ids);
-            if (response == null || response.isEmpty()) {
-                LOG.warnf("Nenhuma cidade encontrada para os IDs: %s", ids);
-                return Response.status(Response.Status.NOT_FOUND).build();
-            }
-            LOG.infof("Retornando %d cidades para os IDs: %s", response.size(), ids);
-            return Response.ok(response).build();
-        } catch (Exception e) {
-            LOG.errorf(e, "Erro ao buscar cidades pelos IDs: %s", ids);
             return Response.status(Status.INTERNAL_SERVER_ERROR).build();
         }
     }

@@ -11,6 +11,7 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -42,24 +43,9 @@ public class EstadoResource {
     }
 
     @GET
-    @Path("/find/{nome}")
-    @RolesAllowed({"ADM", "USER"})
-    public Response buscarPorNome(String nome) {
-        LOG.infof("Requisição para buscar estados pelo nome: %s", nome);
-        try {
-            var estados = service.findByNome(nome);
-            LOG.infof("Encontrados %d estados com o nome '%s'", estados.size(), nome);
-            return Response.ok(estados).build();
-        } catch (Exception e) {
-            LOG.errorf(e, "Erro ao buscar estados pelo nome: %s", nome);
-            return Response.status(Status.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    @GET
     @Path("/find/{sigla}")
     @RolesAllowed({"ADM", "USER"})
-    public Response buscarPorSigla(String sigla) {
+    public Response buscarPorSigla(@PathParam("sigla") String sigla) {
         LOG.infof("Requisição para buscar estados pela sigla: %s", sigla);
         try {
             var estados = service.findBySigla(sigla);

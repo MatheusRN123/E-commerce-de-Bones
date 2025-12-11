@@ -1,12 +1,14 @@
 package br.unitins.topicos1.bone.model;
 
+import java.util.List;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.OneToMany;
 
 @Entity
 public class Endereco {
@@ -23,8 +25,8 @@ public class Endereco {
     @JoinColumn(name = "id_cidade")
     private Cidade cidade;
 
-    @OneToOne(mappedBy = "endereco")
-    private Pedido pedido;
+    @OneToMany(mappedBy = "endereco")
+    private List<Pedido> pedidos;
 
 
     public Long getId() {
@@ -67,11 +69,12 @@ public class Endereco {
         this.cidade = cidade;
     }
 
-    public Pedido getPedido() {
-        return pedido;
+    public List<Pedido> getPedidos() {
+        return pedidos;
     }
 
-    public void setPedido(Pedido pedido) {
-        this.pedido = pedido;
+    public void setPedidos(List<Pedido> pedido) {
+        this.pedidos = pedido;
     }
+
 }

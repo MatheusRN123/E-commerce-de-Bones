@@ -2,6 +2,7 @@ package br.unitins.topicos1.bone.service;
 
 import java.util.List;
 
+import br.unitins.topicos1.bone.dto.UsuarioDTOResponse;
 import br.unitins.topicos1.bone.model.Usuario;
 import br.unitins.topicos1.bone.repository.UsuarioRepository;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -16,6 +17,9 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Inject
     UsuarioRepository repository;
 
+    @Inject
+    HashService hashService;
+
     @Override
     public List<Usuario> findAll() {
         LOG.info("Buscando todos os usuários");
@@ -25,7 +29,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public Usuario findByLogin(String login) {
+    public UsuarioDTOResponse findByLogin(String login) {
         LOG.infof("Buscando usuário pelo login: %s", login);
         Usuario usuario = repository.findByLogin(login);
         if (usuario != null) {
@@ -33,23 +37,33 @@ public class UsuarioServiceImpl implements UsuarioService {
         } else {
             LOG.warnf("Usuário com login '%s' não encontrado", login);
         }
-        return usuario;
+        return UsuarioDTOResponse.valueOf(usuario);
     }
 
     @Override
-    public Usuario findByLoginAndSenha(String login, String senha) {
+    public UsuarioDTOResponse findByLoginAndSenha(String login, String senha) {
         LOG.infof("Buscando usuário pelo login e senha: %s", login);
-        Usuario usuario = repository.findByLoginSenha(login, senha);
-        if (usuario != null) {
-            LOG.infof("Usuário autenticado com sucesso: %s", login);
-        } else {
-            LOG.warnf("Falha na autenticação para login: %s", login);
+        String senhaHash = null;
+        try {
+            senhaHash = hashService.getHashSenha(senha);
+        } catch (Exception e) {
+            LOG.error("Erro ao gerar hash da senha",    e);
+            return null;
         }
-        return usuario;
+
+        Usuario usuario = repository.findByLoginSenha(login,    senhaHash);
+
+        if (usuario != null) {
+            LOG.infof("Usuário autenticado com  sucesso: %s", login);
+        } else {
+            LOG.warnf("Falha na autenticação para   login: %s", login);
+        }
+
+        return UsuarioDTOResponse.valueOf(usuario);
     }
 
     @Override
-    public Usuario findById(Long id) {
+    public UsuarioDTOResponse findById(Long id) {
         LOG.infof("Buscando usuário pelo ID: %d", id);
         Usuario usuario = repository.findById(id);
         if (usuario != null) {
@@ -57,13 +71,72 @@ public class UsuarioServiceImpl implements UsuarioService {
         } else {
             LOG.warnf("Usuário com ID %d não encontrado", id);
         }
-        return usuario;
+        return UsuarioDTOResponse.valueOf(usuario);
     }
 
     @Override
-    public void save(Usuario usuario) {
-        LOG.infof("Salvando usuário: %s", usuario.getLogin());
+    public UsuarioDTOResponse create(Usuario usuario) {
+        LOG.infof("Criando usuário: %s", usuario.   getLogin());
+
+        try {
+            String hash = hashService.getHashSenha(usuario. getSenha());
+            usuario.setSenha(hash);
+        } catch (Exception e) {
+            LOG.error("Erro ao gerar hash da senha ao   criar usuário", e);
+            return null;
+        }
+
         repository.persist(usuario);
-        LOG.infof("Usuário '%s' salvo com sucesso", usuario.getLogin());
+        LOG.infof("Usuário '%s' salvo com sucesso",     usuario.getLogin());
+
+        return UsuarioDTOResponse.valueOf(usuario);
+    }
+
+    @Override
+    public void delete(Long id) {
+        LOG.infof("Deletando usuário com ID: %d", id);
+
+        Usuario usuario = repository.findById(id);
+
+        if (usuario == null) {
+            LOG.warnf("Não foi possível deletar.    Usuário com ID %d não encontrado.", id);
+            return;
+        }
+
+        repository.delete(usuario);
+        LOG.infof("Usuário com ID %d deletado com   sucesso.", id);
+    }
+
+    @Override
+    public UsuarioDTOResponse update(Long id, Usuario usuarioAtualizado) {
+        LOG.infof("Atualizando usuário com ID: %d",     id);
+
+        Usuario usuario = repository.findById(id);
+        if (usuario == null) {
+            LOG.warnf("Usuário com ID %d não    encontrado para atualização.", id);
+            return null;
+        }
+
+        if (usuarioAtualizado.getLogin() != null)
+            usuario.setLogin(usuarioAtualizado.getLogin());
+
+        if (usuarioAtualizado.getSenha() != null) {
+            try {
+                String hash = hashService.getHashSenha  (usuarioAtualizado.getSenha());
+                usuario.setSenha(hash);
+            } catch (Exception e) {
+                LOG.error("Erro ao gerar hash da nova   senha", e);
+            }
+        }
+
+        if (usuarioAtualizado.getPerfil() != null){
+            usuario.setPerfil(usuarioAtualizado.getPerfil());
+        }
+    
+        repository.persist(usuario);
+
+        LOG.infof("Usuário com ID %d atualizado com     sucesso.", id);
+
+        return UsuarioDTOResponse.valueOf(usuario);
     }
 }

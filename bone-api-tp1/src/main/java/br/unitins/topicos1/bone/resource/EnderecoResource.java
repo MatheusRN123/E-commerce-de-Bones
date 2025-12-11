@@ -42,21 +42,6 @@ public class EnderecoResource {
     }
 
     @GET
-    @Path("/find/{cep}")
-    @RolesAllowed({"ADM", "USER"})
-    public Response buscarPorCep(String cep) {
-        LOG.infof("Requisição para buscar endereços pelo CEP: %s", cep);
-        try {
-            var enderecos = service.findByCep(cep);
-            LOG.infof("Encontrados %d endereços com o CEP '%s'", enderecos.size(), cep);
-            return Response.ok(enderecos).build();
-        } catch (Exception e) {
-            LOG.errorf(e, "Erro ao buscar endereços pelo CEP: %s", cep);
-            return Response.status(Status.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    @GET
     @Path("/{id}")
     @RolesAllowed({"ADM", "USER"})
     public Response buscarPorId(Long id) {

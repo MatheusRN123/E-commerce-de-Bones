@@ -14,6 +14,6 @@ public class CidadeRepository implements PanacheRepository<Cidade> {
     }
 
     public List<Cidade> findByIds(List<Long> ids) {
-    return find("id IN ?1", ids).list();
-}
+        return find("id IN ?1", ids).list();
+    }
 }

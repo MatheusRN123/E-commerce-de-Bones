@@ -9,7 +9,6 @@ public interface CidadeService {
     List<CidadeDTOResponse> findAll();
     List<CidadeDTOResponse> findByNome(String nome);
     CidadeDTOResponse findById(Long id);
-    List<CidadeDTOResponse> findByIds(List<Long> ids);
     CidadeDTOResponse create(CidadeDTO dto);
     void update(Long id, CidadeDTO dto);
     void delete(Long id);

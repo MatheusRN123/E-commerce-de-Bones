@@ -6,7 +6,6 @@ import br.unitins.topicos1.bone.dto.EnderecoDTO;
 import br.unitins.topicos1.bone.dto.EnderecoDTOResponse;
 import br.unitins.topicos1.bone.model.Cidade;
 import br.unitins.topicos1.bone.model.Endereco;
-import br.unitins.topicos1.bone.model.Pedido;
 import br.unitins.topicos1.bone.repository.CidadeRepository;
 import br.unitins.topicos1.bone.repository.EnderecoRepository;
 import br.unitins.topicos1.bone.repository.PedidoRepository;
@@ -46,22 +45,6 @@ public class EnderecoServiceImpl implements EnderecoService {
     }
 
     @Override
-    public List<EnderecoDTOResponse> findByCep(String cep) {
-        LOG.infof("Buscando endereços pelo CEP: %s", cep);
-        try {
-            var list = repository.findByCep(cep)
-                    .stream()
-                    .map(EnderecoDTOResponse::valueOf)
-                    .toList();
-            LOG.infof("%d endereços encontrados para o CEP %s", list.size(), cep);
-            return list;
-        } catch (Exception e) {
-            LOG.errorf(e, "Erro ao buscar endereços pelo CEP: %s", cep);
-            throw e;
-        }
-    }
-
-    @Override
     public EnderecoDTOResponse findById(Long id) {
         LOG.infof("Buscando endereço pelo ID: %d", id);
         try {
@@ -91,9 +74,6 @@ public class EnderecoServiceImpl implements EnderecoService {
             Cidade cidade = cidadeRepository.findById(dto.idCidade());
             endereco.setCidade(cidade);
 
-            Pedido pedido = pedidoRepository.findById(dto.idPedido());
-            endereco.setPedido(pedido);
-
             repository.persist(endereco);
 
             LOG.infof("Endereço criado com sucesso: %s, ID: %d", dto.logradouro(), endereco.getId());
@@ -121,9 +101,6 @@ public class EnderecoServiceImpl implements EnderecoService {
 
             Cidade cidade = cidadeRepository.findById(dto.idCidade());
             endereco.setCidade(cidade);
-
-            Pedido pedido = pedidoRepository.findById(dto.idPedido());
-            endereco.setPedido(pedido);
 
             LOG.infof("Endereço ID %d atualizado com sucesso", id);
         } catch (Exception e) {

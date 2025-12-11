@@ -59,22 +59,6 @@ public class EstadoServiceImpl implements EstadoService {
     }
 
     @Override
-    public List<EstadoDTOResponse> findByNome(String nome) {
-        LOG.infof("Buscando estados pelo nome: %s", nome);
-        try {
-            var list = estadoRepository.findByNome(nome)
-                    .stream()
-                    .map(EstadoDTOResponse::valueOf)
-                    .toList();
-            LOG.infof("%d estados encontrados com o nome '%s'", list.size(), nome);
-            return list;
-        } catch (Exception e) {
-            LOG.errorf(e, "Erro ao buscar estados pelo nome: %s", nome);
-            throw e;
-        }
-    }
-
-    @Override
     public List<EstadoDTOResponse> findBySigla(String sigla) {
         LOG.infof("Buscando estados pela sigla: %s", sigla);
         try {

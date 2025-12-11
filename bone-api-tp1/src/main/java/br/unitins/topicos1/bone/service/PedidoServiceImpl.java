@@ -101,10 +101,13 @@ public class PedidoServiceImpl implements PedidoService {
         Endereco endereco = enderecoRepository.findById(dto.idEndereco());
         pedido.setEndereco(endereco);
 
-        List<ItemPedido> itens = dto.itens().stream()
-                .map(i -> criarItem(i, pedido))
-                .toList();
-        pedido.setItens(itens);
+        pedido.getItens().clear();
+
+        for (ItemPedidoDTO itemDTO : dto.itens()) {
+            ItemPedido item = criarItem(itemDTO, pedido);
+            pedido.getItens().add(item);
+        }
+
 
         Pagamento pagamento = criarPagamento(dto.pagamento(), pedido);
         pedido.setPagamento(pagamento);

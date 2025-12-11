@@ -60,17 +60,6 @@ public class CidadeServiceImpl implements CidadeService {
     }
 
     @Override
-    public List<CidadeDTOResponse> findByIds(List<Long> ids) {
-        LOG.infof("Buscando cidades pelos IDs: %s", ids);
-        List<CidadeDTOResponse> response = repository.findByIds(ids)
-                .stream()
-                .map(CidadeDTOResponse::valueOf)
-                .toList();
-        LOG.debugf("Total de cidades encontradas: %d", response.size());
-        return response;
-    }
-
-    @Override
     @Transactional
     public CidadeDTOResponse create(CidadeDTO dto) {
         LOG.infof("Criando nova cidade: %s", dto.nome());

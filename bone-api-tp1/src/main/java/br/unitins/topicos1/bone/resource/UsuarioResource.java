@@ -102,7 +102,7 @@ public class UsuarioResource {
         usuario.setSenha(hash);
         usuario.setPerfil(dto.perfil());
 
-        service.save(usuario);
+        service.create(usuario);
 
         LOG.infof("Usuário '%s' criado com sucesso", dto.login());
         return Response.status(Status.CREATED).entity("Usuário criado com sucesso").build();

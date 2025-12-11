@@ -8,13 +8,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class EstadoRepository implements PanacheRepository<Estado> {
-    
-    public List<Estado> findByNome(String nome){
-        return find("SELECT e FROM Estado e WHERE e.nome LIKE ?1", "%" + nome + "%").list();
-    }
 
     public List<Estado> findBySigla(String sigla){
         return find("SELECT e FROM Estado e WHERE e.sigla LIKE ?1", "%" + sigla + "%").list();
     }
-
 }
