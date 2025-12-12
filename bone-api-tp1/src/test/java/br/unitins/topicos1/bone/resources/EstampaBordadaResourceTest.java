@@ -1,72 +1,72 @@
 package br.unitins.topicos1.bone.resources;
 
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.*;
-
+import br.unitins.topicos1.bone.dto.EstampaBordadaDTO;
+import br.unitins.topicos1.bone.dto.EstampaBordadaDTOResponse;
+import br.unitins.topicos1.bone.resource.EstampaBordadaResource;
+import br.unitins.topicos1.bone.service.EstampaBordadaService;
+import io.quarkus.test.InjectMock;
+import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.security.TestSecurity;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 
-import br.unitins.topicos1.bone.dto.EstampaBordadaDTO;
-import br.unitins.topicos1.bone.service.JwtService;
-import io.restassured.http.ContentType;
-
-import jakarta.inject.Inject;
-
-import io.quarkus.test.security.TestSecurity;
-import io.quarkus.test.junit.QuarkusTest;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @QuarkusTest
 @TestSecurity(authorizationEnabled = false)
-public class EstampaBordadaResourceTest {
+class EstampaBordadaResourceTest {
 
     @Inject
-    JwtService jwtService;
+    EstampaBordadaResource resource;
+
+    @InjectMock
+    EstampaBordadaService service;
 
     @Test
-    public void testCreate() {
+    void testIncluir() {
         EstampaBordadaDTO dto = new EstampaBordadaDTO(
-            "EstampaBordadaTeste",
-            "BORDADA",
-            "frente",
-            "Estampa bordada de teste",
-            "branca",
-            1
+                "EstampaTeste", "BORDADA", "frente",
+                "Descrição teste", "branca", 1
         );
 
-        given()
-            .contentType(ContentType.JSON)
-            .body(dto)
-        .when().post("/estampas/bordada")
-        .then()
-            .statusCode(anyOf(is(201), is(200)))
-            .body("nome", is("EstampaBordadaTeste"));
+        EstampaBordadaDTOResponse dtoResponse = mock(EstampaBordadaDTOResponse.class);
+
+        when(service.create(dto)).thenReturn(dtoResponse);
+
+        Response response = resource.incluir(dto);
+
+        assertEquals(201, response.getStatus());
+        assertEquals(dtoResponse, response.getEntity());
+        verify(service).create(dto);
     }
 
     @Test
-    public void testUpdate() {
+    void testAlterar() {
+        Long id = 1L;
         EstampaBordadaDTO dto = new EstampaBordadaDTO(
-            "EstampaBordadaAtualizada",
-            "BORDADA",
-            "costas",
-            "Estampa bordada atualizada",
-            "preta e branco",
-            2
+                "EstampaAtualizada", "BORDADA", "costas",
+                "Descrição atualizada", "preta", 2
         );
 
-        given()
-            .contentType(ContentType.JSON)
-            .body(dto)
-            .pathParam("id", 1)
-        .when().put("/estampas/bordada/{id}")
-        .then()
-            .statusCode(anyOf(is(200), is(204), is(404)));
+        doNothing().when(service).update(id, dto);
+
+        Response response = resource.alterar(id, dto);
+
+        assertEquals(204, response.getStatus());
+        verify(service).update(id, dto);
     }
 
     @Test
-    public void testDelete() {
-        given()
-            .pathParam("id", 3)
-        .when().delete("/estampas/bordada/{id}")
-        .then()
-            .statusCode(anyOf(is(204), is(404)));
+    void testApagar() {
+        Long id = 3L;
+
+        doNothing().when(service).delete(id);
+
+        Response response = resource.apagar(id);
+
+        assertEquals(204, response.getStatus());
+        verify(service).delete(id);
     }
 }

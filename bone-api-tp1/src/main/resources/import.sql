@@ -49,7 +49,7 @@ insert into endereco(cep, logradouro, numero, id_cidade) values
 ('01001-000', 'Av. Paulista', '1000', 1),
 ('13010-000', 'Rua Boa Vista', '500', 2),
 ('20010-000', 'Av. Atlântica', '150', 3),
-('30110-000', 'Rua da Bahia', '200', 4);
+('30110-000', 'Rua da Bahia', '200', 3);
 
 insert into usuario(nome, login, senha, perfil) values ('Matheus', 'matheus', 'BF4nuveEMMKY41dj5Kx8q06bISaGqniY6CDwaDjv/nh86Q97Fgxw+s9dQxyXy4VDlgpQX6N2zatkAqokrBAFqA==', 1);
 insert into usuario(nome, login, senha, perfil) values ('Lucas', 'lucas', 'I9fCdxtIOOozwZn7u8dsq0lvSVLx9fuKpXuTK+rNlidGS+Ns78unZedOrx7MmiJXQR5TnryTAFRvlgXpoxSjLg==', 2);

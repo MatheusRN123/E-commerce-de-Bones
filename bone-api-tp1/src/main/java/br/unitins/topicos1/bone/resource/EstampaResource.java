@@ -6,6 +6,7 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -39,7 +40,7 @@ public class EstampaResource {
     @GET
     @Path("/find/{nome}")
     @RolesAllowed({"ADM", "USER"})
-    public Response buscarPorNome(String nome) {
+    public Response buscarPorNome(@PathParam("nome") String nome) {
         LOG.infof("Requisição para buscar estampas pelo nome: %s", nome);
         try {
             var response = service.findByNome(nome);
@@ -54,7 +55,7 @@ public class EstampaResource {
     @GET
     @Path("/{id}")
     @RolesAllowed({"ADM", "USER"})
-    public Response buscarPorId(Long id) {
+    public Response buscarPorId(@PathParam("id") Long id) {
         LOG.infof("Requisição para buscar estampa pelo ID: %d", id);
         try {
             var response = service.findById(id);

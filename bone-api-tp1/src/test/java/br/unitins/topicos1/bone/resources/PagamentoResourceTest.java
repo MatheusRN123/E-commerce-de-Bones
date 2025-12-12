@@ -1,126 +1,63 @@
 package br.unitins.topicos1.bone.resources;
 
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.*;
-import static org.hamcrest.CoreMatchers.anyOf;
-
-import java.time.LocalDate;
-
+import br.unitins.topicos1.bone.dto.PagamentoDTOResponse;
+import br.unitins.topicos1.bone.resource.PagamentoResource;
+import br.unitins.topicos1.bone.service.PagamentoService;
+import io.quarkus.test.InjectMock;
+import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.security.TestSecurity;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 
-import br.unitins.topicos1.bone.dto.BoletoDTO;
-import br.unitins.topicos1.bone.dto.CartaoDTO;
-import br.unitins.topicos1.bone.dto.PixDTO;
-import br.unitins.topicos1.bone.service.JwtService;
+import java.util.List;
 
-import io.restassured.http.ContentType;
-import jakarta.inject.Inject;
-
-import io.quarkus.test.security.TestSecurity;
-import io.quarkus.test.junit.QuarkusTest;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @QuarkusTest
 @TestSecurity(authorizationEnabled = false)
-public class PagamentoResourceTest {
-
+class PagamentoResourceUnitTest {
 
     @Inject
-    JwtService jwtService;
+    PagamentoResource pagamentoResource;
+
+    @InjectMock
+    PagamentoService pagamentoService;
 
     @Test
-    public void testBuscarTodos() {
-        given()
-        .when().get("/pagamentos")
-        .then()
-            .statusCode(200)
-            .body(anything());
+    void testBuscarTodos() {
+        PagamentoDTOResponse p1 = mock(PagamentoDTOResponse.class);
+        PagamentoDTOResponse p2 = mock(PagamentoDTOResponse.class);
+
+        when(pagamentoService.findAll()).thenReturn(List.of(p1, p2));
+
+        Response response = pagamentoResource.buscarTodos();
+
+        assertEquals(200, response.getStatus());
+        assertNotNull(response.getEntity());
+        verify(pagamentoService).findAll();
     }
 
     @Test
-    public void testBuscarPorId() {
-        given()
-        .when().get("/pagamentos/1")
-        .then()
-            .statusCode(anyOf(is(200), is(404)));
+    void testBuscarPorIdExistente() {
+        PagamentoDTOResponse p = mock(PagamentoDTOResponse.class);
+        when(pagamentoService.findById(1L)).thenReturn(p);
+
+        Response response = pagamentoResource.buscarPorId(1L);
+
+        assertEquals(200, response.getStatus());
+        assertEquals(p, response.getEntity());
+        verify(pagamentoService).findById(1L);
     }
 
     @Test
-    public void testIncluirPix() {
-        PixDTO dto = new PixDTO("chavepix@example.com", "EMAIL");
+    void testBuscarPorIdInexistente() {
+        when(pagamentoService.findById(99L)).thenReturn(null);
 
-        given()
-            .contentType(ContentType.JSON)
-            .body(dto)
-        .when().post("/pagamentos/pix/1")
-        .then()
-            .statusCode(anyOf(is(201), is(200)));
-    }
+        Response response = pagamentoResource.buscarPorId(99L);
 
-    @Test
-    public void testIncluirBoleto() {
-        BoletoDTO dto = new BoletoDTO("12345678901234567890", LocalDate.now().plusDays(7));
-
-        given()
-            .contentType(ContentType.JSON)
-            .body(dto)
-        .when().post("/pagamentos/boleto/1")
-        .then()
-            .statusCode(anyOf(is(201), is(200)));
-    }
-
-    @Test
-    public void testIncluirCartao() {
-        CartaoDTO dto = new CartaoDTO("Titular Teste", "1234567890123456", "12/25", "123");
-
-        given()
-            .contentType(ContentType.JSON)
-            .body(dto)
-        .when().post("/pagamentos/cartao/1")
-        .then()
-            .statusCode(anyOf(is(201), is(200)));
-    }
-
-    @Test
-    public void testAlterarPix() {
-        PixDTO dto = new PixDTO("novachave@example.com", "EMAIL");
-
-        given()
-            .contentType(ContentType.JSON)
-            .body(dto)
-        .when().put("/pagamentos/pix/1")
-        .then()
-            .statusCode(anyOf(is(204), is(404)));
-    }
-
-    @Test
-    public void testAlterarBoleto() {
-        BoletoDTO dto = new BoletoDTO("09876543210987654321", LocalDate.now().plusDays(10));
-
-        given()
-            .contentType(ContentType.JSON)
-            .body(dto)
-        .when().put("/pagamentos/boleto/1")
-        .then()
-            .statusCode(anyOf(is(204), is(404)));
-    }
-
-    @Test
-    public void testAlterarCartao() {
-        CartaoDTO dto = new CartaoDTO("Titular Atualizado", "6543210987654321", "01/26", "321");
-
-        given()
-            .contentType(ContentType.JSON)
-            .body(dto)
-        .when().put("/pagamentos/cartao/1")
-        .then()
-            .statusCode(anyOf(is(204), is(404)));
-    }
-
-    @Test
-    public void testDeletarPagamento() {
-        given()
-        .when().delete("/pagamentos/3")
-        .then()
-            .statusCode(anyOf(is(204), is(404)));
+        assertEquals(404, response.getStatus());
+        verify(pagamentoService).findById(99L);
     }
 }

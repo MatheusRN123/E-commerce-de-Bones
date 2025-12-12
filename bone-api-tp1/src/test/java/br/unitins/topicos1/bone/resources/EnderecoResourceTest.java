@@ -1,104 +1,103 @@
 package br.unitins.topicos1.bone.resources;
 
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.*; // Import correto para is(), anyOf(), greaterThanOrEqualTo, etc.
-
+import br.unitins.topicos1.bone.dto.EnderecoDTO;
+import br.unitins.topicos1.bone.dto.EnderecoDTOResponse;
+import br.unitins.topicos1.bone.resource.EnderecoResource;
+import br.unitins.topicos1.bone.service.EnderecoService;
+import io.quarkus.test.InjectMock;
+import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.security.TestSecurity;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 
-import br.unitins.topicos1.bone.dto.EnderecoDTO;
-import br.unitins.topicos1.bone.service.HashService;
-import br.unitins.topicos1.bone.service.JwtService;
-import io.restassured.http.ContentType;
+import java.util.List;
 
-import jakarta.inject.Inject;
-
-import io.quarkus.test.security.TestSecurity;
-import io.quarkus.test.junit.QuarkusTest;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @QuarkusTest
 @TestSecurity(authorizationEnabled = false)
-public class EnderecoResourceTest {
+class EnderecoResourceUnitTest {
 
     @Inject
-    JwtService jwtService;
+    EnderecoResource enderecoResource;
 
-    @Inject
-    HashService hashService;
+    @InjectMock
+    EnderecoService enderecoService;
 
     @Test
-    public void testBuscarTodos() {
-        given()
-        .when()
-            .get("/enderecos")
-        .then()
-            .statusCode(200)
-            .body("size()", greaterThanOrEqualTo(0));
+    void testBuscarTodos() {
+        EnderecoDTOResponse dto1 = mock(EnderecoDTOResponse.class);
+        EnderecoDTOResponse dto2 = mock(EnderecoDTOResponse.class);
+        when(enderecoService.findAll()).thenReturn(List.of(dto1, dto2));
+
+        Response response = enderecoResource.buscarTodos();
+
+        assertEquals(200, response.getStatus());
+        verify(enderecoService).findAll();
     }
 
     @Test
-    public void testBuscarPorCep() {
-        given()
-            .pathParam("cep", "12345678")
-        .when()
-            .get("/enderecos/find/{cep}")
-        .then()
-            .statusCode(anyOf(is(200), is(204)));
+    void testBuscarPorIdExistente() {
+        Long id = 1L;
+        EnderecoDTOResponse dto = mock(EnderecoDTOResponse.class);
+        when(enderecoService.findById(id)).thenReturn(dto);
+
+        Response response = enderecoResource.buscarPorId(id);
+
+        assertEquals(200, response.getStatus());
+        assertEquals(dto, response.getEntity());
+        verify(enderecoService).findById(id);
     }
 
     @Test
-    public void testBuscarPorId() {
-        given()
-        .when()
-            .get("/enderecos/1")
-        .then()
-            .statusCode(anyOf(is(200), is(404)));
+    void testBuscarPorIdInexistente() {
+        Long id = 999L;
+        when(enderecoService.findById(id)).thenReturn(null);
+
+        Response response = enderecoResource.buscarPorId(id);
+
+        assertEquals(404, response.getStatus());
+        verify(enderecoService).findById(id);
     }
 
     @Test
-    public void testIncluirEndereco() {
-        EnderecoDTO dto = new EnderecoDTO(
-            "12345678",
-            "Rua Teste",
-            "10",
-            1L,
-            1L
-        );
+    void testIncluirEndereco() {
+        EnderecoDTO dto = new EnderecoDTO("12345678", "Rua Teste", "10", 1L);
+        EnderecoDTOResponse dtoResponse = mock(EnderecoDTOResponse.class);
 
-        given()
-            .contentType(ContentType.JSON)
-            .body(dto)
-        .when()
-            .post("/enderecos")
-        .then()
-            .statusCode(anyOf(is(201), is(200)))
-            .body("logradouro", is("Rua Teste"));
+        when(enderecoService.create(dto)).thenReturn(dtoResponse);
+
+        Response response = enderecoResource.incluirEndereco(dto);
+
+        assertEquals(201, response.getStatus());
+        assertEquals(dtoResponse, response.getEntity());
+        verify(enderecoService).create(dto);
     }
 
     @Test
-    public void testAlterarEndereco() {
-        EnderecoDTO dto = new EnderecoDTO(
-            "87654321",
-            "Rua Atualizada",
-            "15",
-            2,
-            2
-        );
+    void testAlterarEndereco() {
+        Long id = 1L;
+        EnderecoDTO dto = new EnderecoDTO("87654321", "Rua Atualizada", "15", 1L);
 
-        given()
-            .contentType(ContentType.JSON)
-            .body(dto)
-        .when()
-            .put("/enderecos/1")
-        .then()
-            .statusCode(anyOf(is(204), is(404)));
+        doNothing().when(enderecoService).update(id, dto);
+
+        Response response = enderecoResource.alterarEndereco(id, dto);
+
+        assertEquals(204, response.getStatus());
+        verify(enderecoService).update(id, dto);
     }
 
     @Test
-    public void testDeletarEndereco() {
-        given()
-        .when()
-            .delete("/enderecos/3")
-        .then()
-            .statusCode(anyOf(is(204), is(404)));
+    void testDeletarEndereco() {
+        Long id = 1L;
+
+        doNothing().when(enderecoService).delete(id);
+
+        Response response = enderecoResource.deletarEndereco(id);
+
+        assertEquals(204, response.getStatus());
+        verify(enderecoService).delete(id);
     }
 }

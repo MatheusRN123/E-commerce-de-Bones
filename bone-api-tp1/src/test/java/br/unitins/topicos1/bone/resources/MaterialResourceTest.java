@@ -18,10 +18,8 @@ import io.quarkus.test.junit.QuarkusTest;
 @TestSecurity(authorizationEnabled = false)
 public class MaterialResourceTest {
 
-
     @Inject
     JwtService jwtService;
-
 
     @Test
     public void testFindAll() {
@@ -35,7 +33,7 @@ public class MaterialResourceTest {
     @Test
     public void testFindByNome() {
         given()
-            .pathParam("nome", "Nike")
+            .pathParam("nome", "Algodão")
         .when().get("/materiais/find/{nome}")
         .then()
             .statusCode(anyOf(is(200), is(204)));
@@ -44,15 +42,16 @@ public class MaterialResourceTest {
     @Test
     public void testFindById() {
         given()
-        .when().get("/materiais/1")
+            .pathParam("id", 1)
+        .when().get("/materiais/{id}")
         .then()
             .statusCode(200)
             .body("id", equalTo(1));
     }
 
     @Test
-    public void testCreate() {
-        MaterialDTO dto = new MaterialDTO("Linho");
+    public void testCreateMaterial() {
+        MaterialDTO dto = new MaterialDTO("Poliéster");
 
         given()
             .contentType(ContentType.JSON)
@@ -60,26 +59,28 @@ public class MaterialResourceTest {
         .when().post("/materiais")
         .then()
             .statusCode(201)
-            .body("nome", equalTo("Linho"));
+            .body("nome", equalTo("Poliéster"));
     }
 
     @Test
-    public void testUpdate() {
-        MaterialDTO dto = new MaterialDTO("Couro Premium");
+    public void testUpdateMaterial() {
+        MaterialDTO dto = new MaterialDTO("Algodão Atualizado");
 
         given()
             .contentType(ContentType.JSON)
             .body(dto)
-        .when().put("/materiais/1")
+            .pathParam("id", 1)
+        .when().put("/materiais/{id}")
         .then()
-            .statusCode(anyOf(is(200), is(204), is(404)));
+            .statusCode(anyOf(is(204), is(404)));
     }
 
     @Test
-    public void testDelete() {
+    public void testDeleteMaterial() {
         given()
-        .when().delete("/materiais/3")
+            .pathParam("id", 3)
+        .when().delete("/materiais/{id}")
         .then()
-            .statusCode(anyOf(is(204), is(200), is(404)));
+            .statusCode(anyOf(is(204), is(404)));
     }
 }

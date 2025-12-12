@@ -18,7 +18,6 @@ import io.quarkus.test.junit.QuarkusTest;
 @TestSecurity(authorizationEnabled = false)
 public class ModeloResourceTest {
 
-
     @Inject
     JwtService jwtService;
 
@@ -34,7 +33,7 @@ public class ModeloResourceTest {
     @Test
     public void testFindByNome() {
         given()
-            .pathParam("nome", "Nike")
+            .pathParam("nome", "Vintage")
         .when().get("/modelos/find/{nome}")
         .then()
             .statusCode(anyOf(is(200), is(204)));
@@ -43,15 +42,16 @@ public class ModeloResourceTest {
     @Test
     public void testFindById() {
         given()
-        .when().get("/modelos/1")
+            .pathParam("id", 1)
+        .when().get("/modelos/{id}")
         .then()
             .statusCode(200)
             .body("id", equalTo(1));
     }
 
     @Test
-    public void testCreate() {
-        ModeloDTO dto = new ModeloDTO("Vintage", "Retrô", "Casual");
+    public void testCreateModelo() {
+        ModeloDTO dto = new ModeloDTO("Retro", "Casual", "Streetwear");
 
         given()
             .contentType(ContentType.JSON)
@@ -59,26 +59,30 @@ public class ModeloResourceTest {
         .when().post("/modelos")
         .then()
             .statusCode(201)
-            .body("nome", equalTo("Vintage"));
+            .body("nome", equalTo("Retro"))
+            .body("categoria", equalTo("Casual"))
+            .body("estilo", equalTo("Streetwear"));
     }
 
     @Test
-    public void testUpdate() {
-        ModeloDTO dto = new ModeloDTO("Challenge Atualizado", "Streetwear", "Casual");
+    public void testUpdateModelo() {
+        ModeloDTO dto = new ModeloDTO("Retro Atualizado", "Casual", "Streetwear");
 
         given()
             .contentType(ContentType.JSON)
             .body(dto)
-        .when().put("/modelos/1")
+            .pathParam("id", 1)
+        .when().put("/modelos/{id}")
         .then()
-            .statusCode(anyOf(is(200), is(204), is(404)));
+            .statusCode(anyOf(is(204), is(404)));
     }
 
     @Test
-    public void testDelete() {
+    public void testDeleteModelo() {
         given()
-        .when().delete("/modelos/3")
+            .pathParam("id", 3)
+        .when().delete("/modelos/{id}")
         .then()
-            .statusCode(anyOf(is(204), is(200), is(404)));
+            .statusCode(anyOf(is(204), is(404)));
     }
 }

@@ -18,10 +18,8 @@ import io.quarkus.test.junit.QuarkusTest;
 @TestSecurity(authorizationEnabled = false)
 public class MarcaResourceTest {
 
-
     @Inject
     JwtService jwtService;
-
 
     @Test
     public void testFindAll() {
@@ -44,7 +42,8 @@ public class MarcaResourceTest {
     @Test
     public void testFindById() {
         given()
-        .when().get("/marcas/1")
+            .pathParam("id", 1)
+        .when().get("/marcas/{id}")
         .then()
             .statusCode(200)
             .body("id", equalTo(1));
@@ -70,16 +69,18 @@ public class MarcaResourceTest {
         given()
             .contentType(ContentType.JSON)
             .body(dto)
-        .when().put("/marcas/1")
+            .pathParam("id", 1)
+        .when().put("/marcas/{id}")
         .then()
-            .statusCode(anyOf(is(200), is(204), is(404)));
+            .statusCode(anyOf(is(204), is(404)));
     }
 
     @Test
     public void testDelete() {
         given()
-        .when().delete("/marcas/3")
+            .pathParam("id", 3)
+        .when().delete("/marcas/{id}")
         .then()
-            .statusCode(anyOf(is(204), is(200), is(404)));
+            .statusCode(anyOf(is(204), is(404)));
     }
 }

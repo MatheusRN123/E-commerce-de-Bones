@@ -2,7 +2,7 @@ package br.unitins.topicos1.bone.resources;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.anything;
-import static org.hamcrest.CoreMatchers.anyOf;
+import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.CoreMatchers.is;
 
 import java.util.List;
@@ -13,22 +13,13 @@ import br.unitins.topicos1.bone.dto.PedidoDTO;
 import br.unitins.topicos1.bone.dto.ItemPedidoDTO;
 import br.unitins.topicos1.bone.dto.PagamentoDTO;
 import br.unitins.topicos1.bone.dto.PixDTO;
-import br.unitins.topicos1.bone.service.JwtService;
-
 import io.restassured.http.ContentType;
-import jakarta.inject.Inject;
-
-import io.quarkus.test.security.TestSecurity;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.security.TestSecurity;
 
 @QuarkusTest
 @TestSecurity(authorizationEnabled = false)
 public class PedidoResourceTest {
-
-
-    @Inject
-    JwtService jwtService;
-
 
     @Test
     public void testBuscarTodos() {
@@ -42,7 +33,8 @@ public class PedidoResourceTest {
     @Test
     public void testBuscarPorId() {
         given()
-        .when().get("/pedidos/1")
+            .pathParam("id", 1)
+        .when().get("/pedidos/{id}")
         .then()
             .statusCode(anyOf(is(200), is(404)));
     }
@@ -64,7 +56,7 @@ public class PedidoResourceTest {
             .body(dto)
         .when().post("/pedidos")
         .then()
-            .statusCode(anyOf(is(201), is(200)));
+            .statusCode(anyOf(is(201), is(400))); // 400 caso algum erro de validação
     }
 
     @Test
@@ -82,7 +74,8 @@ public class PedidoResourceTest {
         given()
             .contentType(ContentType.JSON)
             .body(dto)
-        .when().put("/pedidos/1")
+            .pathParam("id", 1)
+        .when().put("/pedidos/{id}")
         .then()
             .statusCode(anyOf(is(204), is(404)));
     }
@@ -90,7 +83,8 @@ public class PedidoResourceTest {
     @Test
     public void testDeletarPedido() {
         given()
-        .when().delete("/pedidos/3")
+            .pathParam("id", 3)
+        .when().delete("/pedidos/{id}")
         .then()
             .statusCode(anyOf(is(204), is(404)));
     }

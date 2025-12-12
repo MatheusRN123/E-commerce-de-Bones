@@ -2,7 +2,6 @@ package br.unitins.topicos1.bone.service;
 
 import java.util.List;
 
-import br.unitins.topicos1.bone.dto.UsuarioDTOResponse;
 import br.unitins.topicos1.bone.model.Usuario;
 import br.unitins.topicos1.bone.repository.UsuarioRepository;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -29,7 +28,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public UsuarioDTOResponse findByLogin(String login) {
+    public Usuario findByLogin(String login) {
         LOG.infof("Buscando usuário pelo login: %s", login);
         Usuario usuario = repository.findByLogin(login);
         if (usuario != null) {
@@ -37,17 +36,17 @@ public class UsuarioServiceImpl implements UsuarioService {
         } else {
             LOG.warnf("Usuário com login '%s' não encontrado", login);
         }
-        return UsuarioDTOResponse.valueOf(usuario);
+        return usuario;
     }
 
     @Override
-    public UsuarioDTOResponse findByLoginAndSenha(String login, String senha) {
+    public Usuario findByLoginAndSenha(String login, String senha) {
         LOG.infof("Buscando usuário pelo login e senha: %s", login);
         String senhaHash = null;
         try {
             senhaHash = hashService.getHashSenha(senha);
         } catch (Exception e) {
-            LOG.error("Erro ao gerar hash da senha",    e);
+            LOG.error("Erro ao gerar hash da senha", e);
             return null;
         }
 
@@ -59,11 +58,11 @@ public class UsuarioServiceImpl implements UsuarioService {
             LOG.warnf("Falha na autenticação para   login: %s", login);
         }
 
-        return UsuarioDTOResponse.valueOf(usuario);
+        return usuario;
     }
 
     @Override
-    public UsuarioDTOResponse findById(Long id) {
+    public Usuario findById(Long id) {
         LOG.infof("Buscando usuário pelo ID: %d", id);
         Usuario usuario = repository.findById(id);
         if (usuario != null) {
@@ -71,11 +70,11 @@ public class UsuarioServiceImpl implements UsuarioService {
         } else {
             LOG.warnf("Usuário com ID %d não encontrado", id);
         }
-        return UsuarioDTOResponse.valueOf(usuario);
+        return usuario;
     }
 
     @Override
-    public UsuarioDTOResponse create(Usuario usuario) {
+    public Usuario create(Usuario usuario) {
         LOG.infof("Criando usuário: %s", usuario.   getLogin());
 
         try {
@@ -89,7 +88,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         repository.persist(usuario);
         LOG.infof("Usuário '%s' salvo com sucesso",     usuario.getLogin());
 
-        return UsuarioDTOResponse.valueOf(usuario);
+        return usuario;
     }
 
     @Override
@@ -108,7 +107,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public UsuarioDTOResponse update(Long id, Usuario usuarioAtualizado) {
+    public Usuario update(Long id, Usuario usuarioAtualizado) {
         LOG.infof("Atualizando usuário com ID: %d",     id);
 
         Usuario usuario = repository.findById(id);
@@ -137,6 +136,6 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         LOG.infof("Usuário com ID %d atualizado com     sucesso.", id);
 
-        return UsuarioDTOResponse.valueOf(usuario);
+        return usuario;
     }
 }

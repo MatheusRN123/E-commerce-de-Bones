@@ -31,14 +31,8 @@ public class AuthResource {
     @POST
     @Produces(MediaType.TEXT_PLAIN)
     public Response login(AuthDTO dto) {
-        String hash = null;
-        try {
-            hash = hashService.getHashSenha(dto.senha());
-        } catch (Exception e) {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).build();
-        }
 
-        Usuario usuario = usuarioService.findByLoginAndSenha(dto.login(), hash);
+        Usuario usuario = usuarioService.findByLoginAndSenha(dto.login(), dto.senha());
 
         if (usuario == null)
         return Response.status(Status.UNAUTHORIZED).entity("Login ou senha inválidos").build();

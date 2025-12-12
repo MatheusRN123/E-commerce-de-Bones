@@ -1,89 +1,115 @@
 package br.unitins.topicos1.bone.resources;
 
 import br.unitins.topicos1.bone.dto.CidadeDTO;
-import br.unitins.topicos1.bone.service.JwtService;
+import br.unitins.topicos1.bone.dto.CidadeDTOResponse;
+import br.unitins.topicos1.bone.resource.CidadeResource;
+import br.unitins.topicos1.bone.service.CidadeService;
+import io.quarkus.test.InjectMock;
+import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.security.TestSecurity;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.*;
+import java.util.List;
 
-import io.quarkus.test.security.TestSecurity;
-import io.quarkus.test.junit.QuarkusTest;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @QuarkusTest
 @TestSecurity(authorizationEnabled = false)
-public class CidadeResourceTest {
+class CidadeResourceTest {
 
     @Inject
-    JwtService jwtService;
+    CidadeResource cidadeResource;
+
+    @InjectMock
+    CidadeService cidadeService;
 
     @Test
-    public void testBuscarTodos() {
-        given()
-        .when()
-            .get("/cidades")
-        .then()
-            .statusCode(200)
-            .body("size()", greaterThanOrEqualTo(0));
+    void testBuscarTodos() {
+        CidadeDTOResponse dto1 = mock(CidadeDTOResponse.class);
+        CidadeDTOResponse dto2 = mock(CidadeDTOResponse.class);
+        when(cidadeService.findAll()).thenReturn(List.of(dto1, dto2));
+
+        Response response = cidadeResource.buscarTodos();
+
+        assertEquals(200, response.getStatus());
+        verify(cidadeService).findAll();
     }
 
     @Test
-    public void testBuscarPorId() {
-        Long id = 1L; // ID de teste existente
-        given()
-        .when()
-            .get("/cidades/" + id)
-        .then()
-            .statusCode(anyOf(is(200), is(404)));
+    void testBuscarPorIdExistente() {
+        Long id = 1L;
+        CidadeDTOResponse dto = mock(CidadeDTOResponse.class);
+        when(cidadeService.findById(id)).thenReturn(dto);
+
+        Response response = cidadeResource.buscarPorId(id);
+
+        assertEquals(200, response.getStatus());
+        assertEquals(dto, response.getEntity());
+        verify(cidadeService).findById(id);
     }
 
     @Test
-    public void testBuscarPorNome() {
-        String nome = "São Paulo"; // Nome de teste
-        given()
-        .when()
-            .get("/cidades/find/" + nome)
-        .then()
-            .statusCode(anyOf(is(200), is(204)));
+    void testBuscarPorIdInexistente() {
+        Long id = 999L;
+        when(cidadeService.findById(id)).thenReturn(null);
+
+        Response response = cidadeResource.buscarPorId(id);
+
+        assertEquals(404, response.getStatus());
+        verify(cidadeService).findById(id);
     }
 
     @Test
-    public void testIncluirCidade() {
+    void testBuscarPorNome() {
+        String nome = "São Paulo";
+        CidadeDTOResponse dto = mock(CidadeDTOResponse.class);
+        when(cidadeService.findByNome(nome)).thenReturn(List.of(dto));
+
+        Response response = cidadeResource.buscarPorNome(nome);
+
+        assertEquals(200, response.getStatus());
+        verify(cidadeService).findByNome(nome);
+    }
+
+    @Test
+    void testIncluirCidade() {
         CidadeDTO dto = new CidadeDTO("Cidade Teste", 1L);
+        CidadeDTOResponse dtoResponse = mock(CidadeDTOResponse.class);
 
-        given()
-            .contentType("application/json")
-            .body(dto)
-        .when()
-            .post("/cidades")
-        .then()
-            .statusCode(anyOf(is(201), is(200)))
-            .body("nome", equalTo("Cidade Teste"));
+        when(cidadeService.create(dto)).thenReturn(dtoResponse);
+
+        Response response = cidadeResource.incluirCidade(dto);
+
+        assertEquals(201, response.getStatus());
+        assertEquals(dtoResponse, response.getEntity());
+        verify(cidadeService).create(dto);
     }
 
     @Test
-    public void testAlterarCidade() {
-        Long id = 1L; // ID de teste existente
+    void testAlterarCidade() {
+        Long id = 1L;
         CidadeDTO dto = new CidadeDTO("Cidade Atualizada", 1L);
 
-        given()
-            .contentType("application/json")
-            .body(dto)
-        .when()
-            .put("/cidades/" + id)
-        .then()
-            .statusCode(anyOf(is(204), is(404)));
+        doNothing().when(cidadeService).update(id, dto);
+
+        Response response = cidadeResource.alterarCidade(id, dto);
+
+        assertEquals(204, response.getStatus());
+        verify(cidadeService).update(id, dto);
     }
 
     @Test
-    public void testDeletarCidade() {
-        Long id = 1L; // ID de teste existente
+    void testDeletarCidade() {
+        Long id = 1L;
 
-        given()
-        .when()
-            .delete("/cidades/" + id)
-        .then()
-            .statusCode(anyOf(is(204), is(404)));
+        doNothing().when(cidadeService).delete(id);
+
+        Response response = cidadeResource.deletarCidade(id);
+
+        assertEquals(204, response.getStatus());
+        verify(cidadeService).delete(id);
     }
 }

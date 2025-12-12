@@ -8,7 +8,6 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -48,15 +47,6 @@ public class ItemPedidoResource {
         }
         LOG.infof("Item de pedido ID %d encontrado", id);
         return Response.ok(response).build();
-    }
-
-    @POST
-    @RolesAllowed("ADM")
-    public Response incluirItemPedido(ItemPedidoDTO dto) {
-        LOG.infof("Requisição para criar item de pedido do bone ID: %d", dto.idBone());
-        var response = service.create(dto);
-        LOG.info("Item de pedido criado com sucesso");
-        return Response.status(Status.CREATED).entity(response).build();
     }
 
     @PUT

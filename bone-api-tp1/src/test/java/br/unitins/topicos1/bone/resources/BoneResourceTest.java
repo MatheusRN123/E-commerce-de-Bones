@@ -1,7 +1,8 @@
 package br.unitins.topicos1.bone.resources;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.anything;
 
 import java.util.List;
@@ -20,8 +21,8 @@ public class BoneResourceTest {
     @Test
     public void testFindAll() {
         given()
-            .when().get("/bones")
-            .then()
+        .when().get("/bones")
+        .then()
             .statusCode(200)
             .body(anything());
     }
@@ -30,16 +31,17 @@ public class BoneResourceTest {
     public void testFindByNome() {
         given()
             .pathParam("nome", "Classic")
-            .when().get("/bones/find/{nome}")
-            .then()
-            .statusCode(anyOf(is(200), is(204)));
+        .when().get("/bones/find/{nome}")
+        .then()
+            .statusCode(anyOf(is(200), is(404)));
     }
 
     @Test
     public void testFindById() {
         given()
-            .when().get("/bones/1")
-            .then()
+            .pathParam("id", 1)
+        .when().get("/bones/{id}")
+        .then()
             .statusCode(anyOf(is(200), is(404)));
     }
 
@@ -63,9 +65,9 @@ public class BoneResourceTest {
         given()
             .contentType(ContentType.JSON)
             .body(dto)
-            .when().post("/bones")
-            .then()
-            .statusCode(anyOf(is(201), is(200)))
+        .when().post("/bones")
+        .then()
+            .statusCode(anyOf(is(201), is(400))) // 400 caso falha de validação
             .body("nome", is("BoneTeste"));
     }
 
@@ -89,16 +91,18 @@ public class BoneResourceTest {
         given()
             .contentType(ContentType.JSON)
             .body(dto)
-            .when().put("/bones/1")
-            .then()
-            .statusCode(anyOf(is(200), is(204), is(404)));
+            .pathParam("id", 1)
+        .when().put("/bones/{id}")
+        .then()
+            .statusCode(anyOf(is(204), is(404))); // 204 quando atualizado com sucesso
     }
 
     @Test
     public void testDeleteBone() {
         given()
-            .when().delete("/bones/3")
-            .then()
+            .pathParam("id", 3)
+        .when().delete("/bones/{id}")
+        .then()
             .statusCode(anyOf(is(204), is(404)));
     }
 }

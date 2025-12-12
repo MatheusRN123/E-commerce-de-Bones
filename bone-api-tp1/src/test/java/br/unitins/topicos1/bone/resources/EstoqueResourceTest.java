@@ -22,7 +22,6 @@ import io.quarkus.test.junit.QuarkusTest;
 @TestSecurity(authorizationEnabled = false)
 public class EstoqueResourceTest {
 
-
     @Inject
     JwtService jwtService;
 
@@ -47,7 +46,8 @@ public class EstoqueResourceTest {
     @Test
     public void testFindById() {
         given()
-        .when().get("/estoques/1")
+            .pathParam("id", 1)
+        .when().get("/estoques/{id}")
         .then()
             .statusCode(anyOf(is(200), is(404)));
     }
@@ -72,15 +72,17 @@ public class EstoqueResourceTest {
         given()
             .contentType(ContentType.JSON)
             .body(dto)
-        .when().put("/estoques/1")
+            .pathParam("id", 1)
+        .when().put("/estoques/{id}")
         .then()
-            .statusCode(anyOf(is(200), is(204), is(404)));
+            .statusCode(anyOf(is(204), is(404)));
     }
 
     @Test
     public void testDeleteEstoque() {
         given()
-        .when().delete("/estoques/4")
+            .pathParam("id", 4)
+        .when().delete("/estoques/{id}")
         .then()
             .statusCode(anyOf(is(204), is(404)));
     }
@@ -88,7 +90,8 @@ public class EstoqueResourceTest {
     @Test
     public void testVerificarDisponibilidade() {
         given()
-        .when().get("/estoques/1/disponivel")
+            .pathParam("id", 1)
+        .when().get("/estoques/{id}/disponibilidade")
         .then()
             .statusCode(anyOf(is(200), is(404)));
     }
@@ -100,9 +103,10 @@ public class EstoqueResourceTest {
         given()
             .contentType(ContentType.JSON)
             .body(dto)
-        .when().patch("/estoques/1/atualizar")
+            .pathParam("id", 1)
+        .when().put("/estoques/{id}/quantidade")
         .then()
-            .statusCode(anyOf(is(200), is(204), is(404)));
+            .statusCode(anyOf(is(204), is(404)));
     }
 
     @Test
@@ -112,8 +116,9 @@ public class EstoqueResourceTest {
         given()
             .contentType(ContentType.JSON)
             .body(dto)
-        .when().patch("/estoques/1/adicionar")
+            .pathParam("id", 1)
+        .when().put("/estoques/{id}/adicionar")
         .then()
-            .statusCode(anyOf(is(200), is(204), is(404)));
+            .statusCode(anyOf(is(204), is(404)));
     }
 }

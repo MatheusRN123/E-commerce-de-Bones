@@ -49,23 +49,6 @@ public class ItemPedidoServiceImpl implements ItemPedidoService {
 
     @Override
     @Transactional
-    public ItemPedidoDTOResponse create(ItemPedidoDTO dto) {
-        LOG.infof("Requisição para criar item de pedido do bone ID: %d", dto.idBone());
-        ItemPedido item = new ItemPedido();
-
-        Bone bone = boneRepository.findById(dto.idBone());
-        item.setBone(bone);
-
-        item.setQuantidade(dto.quantidade());
-        item.setPreco(dto.preco());
-
-        repository.persist(item);
-        LOG.info("Item de pedido criado com sucesso");
-        return ItemPedidoDTOResponse.valueOf(item);
-    }
-
-    @Override
-    @Transactional
     public void update(Long id, ItemPedidoDTO dto) {
         LOG.infof("Requisição para atualizar item de pedido ID: %d", id);
         ItemPedido item = repository.findById(id);

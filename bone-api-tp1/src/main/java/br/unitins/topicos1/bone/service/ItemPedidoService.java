@@ -8,7 +8,6 @@ import br.unitins.topicos1.bone.dto.ItemPedidoDTOResponse;
 public interface ItemPedidoService {
     List<ItemPedidoDTOResponse> findAll();
     ItemPedidoDTOResponse findById(Long id);
-    ItemPedidoDTOResponse create(ItemPedidoDTO dto);
     void update(Long id, ItemPedidoDTO dto);
     void delete(Long id);
 }

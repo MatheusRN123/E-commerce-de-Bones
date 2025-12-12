@@ -1,106 +1,115 @@
 package br.unitins.topicos1.bone.resources;
 
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.*;
-
+import br.unitins.topicos1.bone.dto.EstadoDTO;
+import br.unitins.topicos1.bone.dto.EstadoDTOResponse;
+import br.unitins.topicos1.bone.resource.EstadoResource;
+import br.unitins.topicos1.bone.service.EstadoService;
+import io.quarkus.test.InjectMock;
+import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.security.TestSecurity;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 
-import br.unitins.topicos1.bone.dto.EstadoDTO;
-import br.unitins.topicos1.bone.service.JwtService;
-import io.restassured.http.ContentType;
+import java.util.List;
 
-import jakarta.inject.Inject;
-
-import io.quarkus.test.security.TestSecurity;
-import io.quarkus.test.junit.QuarkusTest;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @QuarkusTest
 @TestSecurity(authorizationEnabled = false)
-public class EstadoResourceTest {
+class EstadoResourceUnitTest {
 
     @Inject
-    JwtService jwtService;
+    EstadoResource estadoResource;
+
+    @InjectMock
+    EstadoService estadoService;
 
     @Test
-    public void testBuscarTodos() {
-        given()
-        .when()
-            .get("/estados")
-        .then()
-            .statusCode(200)
-            .body("size()", greaterThanOrEqualTo(0));
+    void testBuscarTodos() {
+        EstadoDTOResponse dto1 = mock(EstadoDTOResponse.class);
+        EstadoDTOResponse dto2 = mock(EstadoDTOResponse.class);
+        when(estadoService.findAll()).thenReturn(List.of(dto1, dto2));
+
+        Response response = estadoResource.buscarTodos();
+
+        assertEquals(200, response.getStatus());
+        verify(estadoService).findAll();
     }
 
     @Test
-    public void testBuscarPorNome() {
-        given()
-            .pathParam("nome", "São Paulo")
-        .when()
-            .get("/estados/find/{nome}")
-        .then()
-            .statusCode(anyOf(is(200), is(204)));
+    void testBuscarPorIdExistente() {
+        Long id = 1L;
+        EstadoDTOResponse dto = mock(EstadoDTOResponse.class);
+        when(estadoService.findById(id)).thenReturn(dto);
+
+        Response response = estadoResource.buscarPorId(id);
+
+        assertEquals(200, response.getStatus());
+        assertEquals(dto, response.getEntity());
+        verify(estadoService).findById(id);
     }
 
     @Test
-    public void testBuscarPorSigla() {
-        given()
-            .pathParam("sigla", "SP")
-        .when()
-            .get("/estados/find/{sigla}")
-        .then()
-            .statusCode(anyOf(is(200), is(204)));
+    void testBuscarPorIdInexistente() {
+        Long id = 999L;
+        when(estadoService.findById(id)).thenReturn(null);
+
+        Response response = estadoResource.buscarPorId(id);
+
+        assertEquals(404, response.getStatus());
+        verify(estadoService).findById(id);
     }
 
     @Test
-    public void testBuscarPorId() {
-        given()
-        .when()
-            .get("/estados/1")
-        .then()
-            .statusCode(anyOf(is(200), is(404)));
+    void testBuscarPorSigla() {
+        String sigla = "SP";
+        EstadoDTOResponse dto = mock(EstadoDTOResponse.class);
+        when(estadoService.findBySigla(sigla)).thenReturn(List.of(dto));
+
+        Response response = estadoResource.buscarPorSigla(sigla);
+
+        assertEquals(200, response.getStatus());
+        verify(estadoService).findBySigla(sigla);
     }
 
     @Test
-    public void testIncluirEstado() {
-        EstadoDTO dto = new EstadoDTO(
-            "EstadoTeste",
-            "ET",
-            null // idsCidades null para não depender de dados existentes
-        );
+    void testIncluirEstado() {
+        EstadoDTO dto = new EstadoDTO("EstadoTeste", "ET", null);
+        EstadoDTOResponse dtoResponse = mock(EstadoDTOResponse.class);
 
-        given()
-            .contentType(ContentType.JSON)
-            .body(dto)
-        .when()
-            .post("/estados")
-        .then()
-            .statusCode(anyOf(is(201), is(200)))
-            .body("nome", is("EstadoTeste"));
+        when(estadoService.create(dto)).thenReturn(dtoResponse);
+
+        Response response = estadoResource.incluirEstado(dto);
+
+        assertEquals(201, response.getStatus());
+        assertEquals(dtoResponse, response.getEntity());
+        verify(estadoService).create(dto);
     }
 
     @Test
-    public void testAlterarEstado() {
-        EstadoDTO dto = new EstadoDTO(
-            "EstadoAtualizado",
-            "EA",
-            null // idsCidades null
-        );
+    void testAlterarEstado() {
+        Long id = 1L;
+        EstadoDTO dto = new EstadoDTO("EstadoAtualizado", "EA", null);
 
-        given()
-            .contentType(ContentType.JSON)
-            .body(dto)
-        .when()
-            .put("/estados/1")
-        .then()
-            .statusCode(anyOf(is(204), is(404)));
+        doNothing().when(estadoService).update(id, dto);
+
+        Response response = estadoResource.alterarEstado(id, dto);
+
+        assertEquals(204, response.getStatus());
+        verify(estadoService).update(id, dto);
     }
 
     @Test
-    public void testDeletarEstado() {
-        given()
-        .when()
-            .delete("/estados/3")
-        .then()
-            .statusCode(anyOf(is(204), is(404)));
+    void testDeletarEstado() {
+        Long id = 1L;
+
+        doNothing().when(estadoService).delete(id);
+
+        Response response = estadoResource.deletarEstado(id);
+
+        assertEquals(204, response.getStatus());
+        verify(estadoService).delete(id);
     }
 }

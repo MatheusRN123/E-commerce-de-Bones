@@ -14,6 +14,19 @@ public class EstampaBordada extends Estampa {
     @Column(name = "qt_cores")
     private Integer quantCores;
 
+    public EstampaBordada() {
+        
+    }
+
+    public EstampaBordada(String nome, String posicao, String descricao, String corLinha, Integer quantCores) {
+        this.setNome(nome);
+        this.setPosicao(posicao);
+        this.setDescricao(descricao);
+        this.corLinha = corLinha;
+        this.quantCores = quantCores;
+    }
+
+
     public void setCorLinha(String corLinha){
         this.corLinha = corLinha;
     }

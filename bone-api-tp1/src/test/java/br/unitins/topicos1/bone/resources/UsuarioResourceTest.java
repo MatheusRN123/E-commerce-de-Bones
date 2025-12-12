@@ -1,9 +1,8 @@
 package br.unitins.topicos1.bone.resources;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.anything;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.*;
+import static org.hamcrest.CoreMatchers.anyOf;
 
 import org.junit.jupiter.api.Test;
 
@@ -21,10 +20,8 @@ import io.quarkus.test.junit.QuarkusTest;
 @TestSecurity(authorizationEnabled = false)
 public class UsuarioResourceTest {
 
-
     @Inject
     JwtService jwtService;
-
 
     @Test
     public void testBuscarTodos() {
@@ -32,7 +29,7 @@ public class UsuarioResourceTest {
         .when().get("/usuarios")
         .then()
             .statusCode(200)
-            .body(anything());
+            .body("$.size()", greaterThan(0));
     }
 
     @Test
@@ -57,7 +54,8 @@ public class UsuarioResourceTest {
     @Test
     public void testBuscarPorId() {
         given()
-        .when().get("/usuarios/1")
+            .pathParam("id", 1)
+        .when().get("/usuarios/{id}")
         .then()
             .statusCode(anyOf(is(200), is(404)));
     }
@@ -71,7 +69,6 @@ public class UsuarioResourceTest {
             Perfil.USER
         );
 
-        // Cadastro geralmente não precisa de token
         given()
             .contentType(ContentType.JSON)
             .body(dto)

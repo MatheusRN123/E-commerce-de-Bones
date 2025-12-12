@@ -1,70 +1,72 @@
 package br.unitins.topicos1.bone.resources;
 
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.*;
-
+import br.unitins.topicos1.bone.dto.EstampaDigitalDTO;
+import br.unitins.topicos1.bone.dto.EstampaDigitalDTOResponse;
+import br.unitins.topicos1.bone.resource.EstampaDigitalResource;
+import br.unitins.topicos1.bone.service.EstampaDigitalService;
+import io.quarkus.test.InjectMock;
+import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.security.TestSecurity;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 
-import br.unitins.topicos1.bone.dto.EstampaDigitalDTO;
-import br.unitins.topicos1.bone.service.JwtService;
-import io.restassured.http.ContentType;
-
-import jakarta.inject.Inject;
-
-import io.quarkus.test.security.TestSecurity;
-import io.quarkus.test.junit.QuarkusTest;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @QuarkusTest
 @TestSecurity(authorizationEnabled = false)
-public class EstampaDigitalResourceTest {
+class EstampaDigitalResourceUnitTest {
 
     @Inject
-    JwtService jwtService;
+    EstampaDigitalResource resource;
+
+    @InjectMock
+    EstampaDigitalService service;
 
     @Test
-    public void testCreate() {
+    void testIncluir() {
         EstampaDigitalDTO dto = new EstampaDigitalDTO(
-            "EstampaDigitalTeste",
-            "DIGITAL",
-            "frente",
-            "Estampa digital de teste",
-            "Alta resolução"
+                "EstampaDigitalTeste", "DIGITAL", "frente", 
+                "Descrição teste", "Alta resolução"
         );
 
-        given()
-            .contentType(ContentType.JSON)
-            .body(dto)
-        .when().post("/estampas/digital")
-        .then()
-            .statusCode(anyOf(is(201), is(200)))
-            .body("nome", is("EstampaDigitalTeste"));
+        EstampaDigitalDTOResponse responseMock = mock(EstampaDigitalDTOResponse.class);
+
+        when(service.create(dto)).thenReturn(responseMock);
+
+        Response response = resource.incluir(dto);
+
+        assertEquals(201, response.getStatus());
+        assertEquals(responseMock, response.getEntity());
+        verify(service).create(dto);
     }
 
     @Test
-    public void testUpdate() {
+    void testAlterar() {
+        Long id = 1L;
         EstampaDigitalDTO dto = new EstampaDigitalDTO(
-            "EstampaDigitalAtualizada",
-            "DIGITAL",
-            "costas",
-            "Estampa digital atualizada",
-            "4K"
+                "EstampaDigitalAtualizada", "DIGITAL", "costas",
+                "Descrição atualizada", "4K"
         );
 
-        given()
-            .contentType(ContentType.JSON)
-            .body(dto)
-            .pathParam("id", 1)
-        .when().put("/estampas/digital/{id}")
-        .then()
-            .statusCode(anyOf(is(200), is(204), is(404)));
+        doNothing().when(service).update(id, dto);
+
+        Response response = resource.alterar(id, dto);
+
+        assertEquals(204, response.getStatus());
+        verify(service).update(id, dto);
     }
 
     @Test
-    public void testDelete() {
-        given()
-            .pathParam("id", 2)
-        .when().delete("/estampas/digital/{id}")
-        .then()
-            .statusCode(anyOf(is(204), is(404)));
+    void testApagar() {
+        Long id = 2L;
+
+        doNothing().when(service).delete(id);
+
+        Response response = resource.apagar(id);
+
+        assertEquals(204, response.getStatus());
+        verify(service).delete(id);
     }
 }
