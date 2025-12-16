@@ -5,9 +5,7 @@ import br.unitins.topicos1.bone.service.EstoqueService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -25,94 +23,6 @@ public class EstoqueResource {
 
     @Inject
     EstoqueService service;
-
-    @GET
-    @RolesAllowed({"ADM", "USER"})
-    public Response buscarTodos() {
-        LOG.info("Requisição para buscar todos os estoques");
-        try {
-            var response = service.findAll();
-            LOG.infof("Retornando %d estoques", response.size());
-            return Response.ok(response).build();
-        } catch (Exception e) {
-            LOG.error("Erro ao buscar todos os estoques", e);
-            return Response.status(Status.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    @GET
-    @Path("/{id}")
-    @RolesAllowed({"ADM", "USER"})
-    public Response buscarPorId(Long id) {
-        LOG.infof("Requisição para buscar estoque pelo ID: %d", id);
-        try {
-            var response = service.findById(id);
-            LOG.infof("Estoque ID %d encontrado", id);
-            return Response.ok(response).build();
-        } catch (Exception e) {
-            LOG.errorf(e, "Erro ao buscar estoque ID: %d", id);
-            return Response.status(Status.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    @GET
-    @Path("/find/{quantidade}")
-    @RolesAllowed("ADM")
-    public Response buscarPorQuantidade(Integer quantidade) {
-        LOG.infof("Requisição para buscar estoques com quantidade: %d", quantidade);
-        try {
-            var response = service.findByQuantidade(quantidade);
-            LOG.infof("Encontrados %d estoques com quantidade %d", response.size(), quantidade);
-            return Response.ok(response).build();
-        } catch (Exception e) {
-            LOG.errorf(e, "Erro ao buscar estoques com quantidade: %d", quantidade);
-            return Response.status(Status.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    @POST
-    @RolesAllowed("ADM")
-    public Response incluirEstoque(EstoqueDTO dto) {
-        LOG.infof("Requisição para criar estoque com quantidade: %d", dto.quantidade());
-        try {
-            var response = service.create(dto);
-            LOG.info("Estoque criado com sucesso");
-            return Response.status(Status.CREATED).entity(response).build();
-        } catch (Exception e) {
-            LOG.error("Erro ao criar estoque", e);
-            return Response.status(Status.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    @PUT
-    @Path("/{id}")
-    @RolesAllowed("ADM")
-    public Response alterarEstoque(Long id, EstoqueDTO dto) {
-        LOG.infof("Requisição para atualizar estoque ID: %d", id);
-        try {
-            service.update(id, dto);
-            LOG.infof("Estoque ID %d atualizado com sucesso", id);
-            return Response.noContent().build();
-        } catch (Exception e) {
-            LOG.errorf(e, "Erro ao atualizar estoque ID: %d", id);
-            return Response.status(Status.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    @DELETE
-    @Path("/{id}")
-    @RolesAllowed("ADM")
-    public Response apagarEstoque(Long id) {
-        LOG.infof("Requisição para deletar estoque ID: %d", id);
-        try {
-            service.delete(id);
-            LOG.infof("Estoque ID %d deletado com sucesso", id);
-            return Response.noContent().build();
-        } catch (Exception e) {
-            LOG.errorf(e, "Erro ao deletar estoque ID: %d", id);
-            return Response.status(Status.INTERNAL_SERVER_ERROR).build();
-        }
-    }
 
     @GET
     @Path("/{id}/disponibilidade")

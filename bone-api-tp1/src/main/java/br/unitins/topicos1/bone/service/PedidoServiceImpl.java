@@ -157,7 +157,6 @@ public class PedidoServiceImpl implements PedidoService {
             default -> throw new IllegalArgumentException   ("Tipo de pagamento inválido: " + dto. tipoPagamento());
         }
     
-        // Dados comuns do pagamento
         pagamento.setPedido(pedido);
         pagamento.setData(LocalDateTime.now());
         pagamento.setValor(pedido.getValorTotal());
@@ -169,13 +168,33 @@ public class PedidoServiceImpl implements PedidoService {
 
     private ItemPedido criarItem(ItemPedidoDTO dto, Pedido pedido) {
         LOG.infof("Criando item de pedido para Bone ID %d, quantidade %d", dto.idBone(), dto.quantidade());
+
+        Bone bone = boneRepository.findById(dto.idBone());
+
+        if(bone == null){
+            throw new IllegalArgumentException("Boné não encontrado");
+        }
+
+        Estoque estoque = bone.getEstoque();
+
+        if(estoque == null){
+            throw new IllegalStateException("Boné não possui estoque cadastrado");
+        }
+
+        if(estoque.getQuantidade() < dto.quantidade()){
+            throw new IllegalStateException("Estoque insuficiente para o boné: " + bone.getNome());
+        }
+
+        estoque.atualizarQuantidade(estoque.getQuantidade() - dto.quantidade());
+
         ItemPedido item = new ItemPedido();
-        item.setBone(boneRepository.findById(dto.idBone()));
+        item.setBone(bone);
         item.setQuantidade(dto.quantidade());
         item.setPreco(dto.preco());
         item.setPedido(pedido);
-        LOG.infof("Item criado: Bone ID %d, Preço %.2f", dto.idBone(), dto.preco());
+
+        LOG.infof("Item criado. Estoque restante do boné '%s': %d", bone.getNome(), estoque.getQuantidade());
+
         return item;
     }
-
 }

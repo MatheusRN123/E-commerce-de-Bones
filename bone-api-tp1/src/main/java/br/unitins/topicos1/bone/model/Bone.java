@@ -35,7 +35,7 @@ public class Bone {
 
     private String circunferencia;
 
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     private Bordado bordado;
 
     @ManyToOne

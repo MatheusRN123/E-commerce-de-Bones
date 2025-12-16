@@ -18,13 +18,12 @@ public record BoneDTOResponse(
     String circunferencia,
     Bordado bordado,
     String nomeMarca,
-    Integer quantidadeEstoque,
+    EstoqueDTOResponse estoque,
     String nomeModelo,
     List<?> estampas
 )  {
     
         public static BoneDTOResponse valueOf(Bone bone){
-        Integer quantidadeEstoque = (bone.getEstoque() != null) ? bone.getEstoque().    getQuantidade() : null;
 
         List<?> estampas = (bone.getEstampas() != null) ? bone.getEstampas().stream().map(estampa -> {
             if (estampa instanceof EstampaBordada eb){
@@ -46,7 +45,7 @@ public record BoneDTOResponse(
             bone.getCircunferencia(),
             bone.getBordado(),
             bone.getMarca().getNome(),
-            quantidadeEstoque,
+            EstoqueDTOResponse.valueOf(bone.getEstoque()),
             bone.getModelo().getNome(),
             estampas
         );

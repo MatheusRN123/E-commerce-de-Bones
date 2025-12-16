@@ -87,12 +87,22 @@ public class BoneServiceImpl implements BoneService {
             bone.setBordado(dto.bordado());
 
             Material material = repositoryMaterial.findById(dto.idMaterial());
-            bone.setMaterial(material);
-
+            if (material == null){
+                throw new NotFoundException("Material não encontrado");
+            }
+            
             Marca marca = repositoryMarca.findById(dto.idMarca());
-            bone.setMarca(marca);
+            if (marca == null){
+                throw new NotFoundException("Marca não encontrada");
+            }
 
             Modelo modelo = repositoryModelo.findById(dto.idModelo());
+            if (modelo == null){
+                throw new NotFoundException("Modelo não encontrado");
+            }
+
+            bone.setMaterial(material);
+            bone.setMarca(marca);
             bone.setModelo(modelo);
 
             Estoque estoque = new Estoque();

@@ -1,124 +1,125 @@
 package br.unitins.topicos1.bone.resources;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.Matchers.anything;
-import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import br.unitins.topicos1.bone.dto.BoneDTO;
 import br.unitins.topicos1.bone.dto.EstoqueDTO;
-import br.unitins.topicos1.bone.service.JwtService;
+import br.unitins.topicos1.bone.model.Bordado;
+import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.security.TestSecurity;
 import io.restassured.http.ContentType;
 
-import jakarta.inject.Inject;
-
-import io.quarkus.test.security.TestSecurity;
-import io.quarkus.test.junit.QuarkusTest;
-
 @QuarkusTest
-@TestSecurity(authorizationEnabled = false)
+@TestSecurity(user = "admin", roles = {"ADM"})
 public class EstoqueResourceTest {
 
-    @Inject
-    JwtService jwtService;
+    /**
+     * Cria um Boné (com Estoque por composição)
+     * e retorna o ID do Estoque criado
+     */
+    private Long criarEstoque() {
+        BoneDTO boneDTO = new BoneDTO(
+            "Boné Teste",
+            "Preto",
+            1L,
+            "Reta",
+            5.5f,
+            10.0f,
+            "58cm",
+            Bordado.COM_BORDADO,
+            1L,
+            1L,
+            10,
+            List.of()
+        );
+    
+        var response =
+            given()
+                .contentType(ContentType.JSON)
+                .body(boneDTO)
+            .when()
+                .post("/bones")
+            .then()
+                .log().all()
+                .statusCode(anyOf(is(201), is(400)))
+                .extract();
+    
+        // Se criou, retorna o estoque
+        if (response.statusCode() == 201) {
+            return response.path("estoque.id");
+        }
+    
+        // Se não criou, o teste não pode continuar
+        throw new RuntimeException("Não foi possível criar     estoque para o teste");
+    }
+
 
     @Test
-    public void testFindAll() {
+    public void testVerificarDisponibilidadeSucesso() {
+        Long idEstoque = criarEstoque();
+
         given()
-        .when().get("/estoques")
+            .pathParam("id", idEstoque)
+        .when()
+            .get("/estoques/{id}/disponibilidade")
         .then()
             .statusCode(200)
-            .body(anything());
-    }
-
-    @Test
-    public void testFindByQuantidade() {
-        given()
-            .pathParam("quantidade", 5)
-        .when().get("/estoques/find/{quantidade}")
-        .then()
-            .statusCode(anyOf(is(200), is(204)));
-    }
-
-    @Test
-    public void testFindById() {
-        given()
-            .pathParam("id", 1)
-        .when().get("/estoques/{id}")
-        .then()
-            .statusCode(anyOf(is(200), is(404)));
-    }
-
-    @Test
-    public void testCreateEstoque() {
-        EstoqueDTO dto = new EstoqueDTO(15, LocalDate.now());
-
-        given()
-            .contentType(ContentType.JSON)
-            .body(dto)
-        .when().post("/estoques")
-        .then()
-            .statusCode(anyOf(is(201), is(200)))
-            .body("quantidade", is(15));
-    }
-
-    @Test
-    public void testUpdateEstoque() {
-        EstoqueDTO dto = new EstoqueDTO(25, LocalDate.now());
-
-        given()
-            .contentType(ContentType.JSON)
-            .body(dto)
-            .pathParam("id", 1)
-        .when().put("/estoques/{id}")
-        .then()
-            .statusCode(anyOf(is(204), is(404)));
-    }
-
-    @Test
-    public void testDeleteEstoque() {
-        given()
-            .pathParam("id", 4)
-        .when().delete("/estoques/{id}")
-        .then()
-            .statusCode(anyOf(is(204), is(404)));
-    }
-
-    @Test
-    public void testVerificarDisponibilidade() {
-        given()
-            .pathParam("id", 1)
-        .when().get("/estoques/{id}/disponibilidade")
-        .then()
-            .statusCode(anyOf(is(200), is(404)));
+            .body(is(true));
     }
 
     @Test
     public void testAtualizarQuantidade() {
+        Long idEstoque = criarEstoque();
+
         EstoqueDTO dto = new EstoqueDTO(30, LocalDate.now());
 
         given()
             .contentType(ContentType.JSON)
             .body(dto)
-            .pathParam("id", 1)
-        .when().put("/estoques/{id}/quantidade")
+            .pathParam("id", idEstoque)
+        .when()
+            .put("/estoques/{id}/quantidade")
         .then()
-            .statusCode(anyOf(is(204), is(404)));
+            .statusCode(204);
+
+        // Validação indireta via disponibilidade
+        given()
+            .pathParam("id", idEstoque)
+        .when()
+            .get("/estoques/{id}/disponibilidade")
+        .then()
+            .statusCode(200)
+            .body(is(true));
     }
 
     @Test
     public void testAdicionarQuantidade() {
-        EstoqueDTO dto = new EstoqueDTO(10, LocalDate.now());
+        Long idEstoque = criarEstoque();
+
+        EstoqueDTO dto = new EstoqueDTO(5, LocalDate.now());
 
         given()
             .contentType(ContentType.JSON)
             .body(dto)
-            .pathParam("id", 1)
-        .when().put("/estoques/{id}/adicionar")
+            .pathParam("id", idEstoque)
+        .when()
+            .put("/estoques/{id}/adicionar")
         .then()
-            .statusCode(anyOf(is(204), is(404)));
+            .statusCode(204);
+
+        // Validação indireta
+        given()
+            .pathParam("id", idEstoque)
+        .when()
+            .get("/estoques/{id}/disponibilidade")
+        .then()
+            .statusCode(200)
+            .body(is(true));
     }
 }
