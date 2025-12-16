@@ -1,92 +1,172 @@
 @startuml
 skinparam classAttributeIconSize 0
 
-' =============================
-' ENTIDADES CRUD
-' =============================
-class Bone {
-  - String nome
-  - String cor
-  - String categoriaAba
-  - Float tamanhoAba
-  - Float profundidade
-  - String circunferencia
-  - Bordado bordado
-  - Marca marca
-  - Material material
-  - Modelo modelo
-}
-
-class Material {
-  - String nome
-}
-
+' =======================
+' ENUMS
+' =======================
 enum Bordado {
   COM_BORDADO
   SEM_BORDADO
   PERSONALIZADO
-
 }
 
-class Marca {
-  - String nome
+enum Perfil {
+  ADM
+  USER
 }
 
-class Modelo {
-  - String nome
-  - String categoria
-  - String estilo
+' =======================
+' CLASSES
+' =======================
+class Bone {
+  - id: Long
+  - nome: String
+  - cor: String
+  - categoriaAba: String
+  - tamanhoAba: Float
+  - profundidade: Float
+  - circunferencia: String
 }
 
 class Estoque {
-  - Integer quantidade
-  - Date dataAtualizacao
+  - id: Long
+  - quantidade: Integer
+  - dataAtualizacao: LocalDate
+  + verificarDisponibilidade(): Boolean
+  + atualizarQuantidade(qtd: Integer): void
+  + adicionarQuantidade(qtd: Integer): void
 }
 
-class Estampa {
-  - String nome
-  - String tipo
-  - String posicao
-  - String descricao
+class Marca {
+  - id: Long
+  - nome: String
 }
 
+class Material {
+  - id: Long
+  - nome: String
+}
 
-' =============================
-' RELACIONAMENTOS
-' =============================
+class Modelo {
+  - id: Long
+  - nome: String
+  - categoria: String
+  - estilo: String
+}
 
-' Enum
-Bone --> Bordado
+abstract class Estampa {
+  - id: Long
+  - nome: String
+  - posicao: String
+  - descricao: String
+}
 
-' Relacionamentos 1-N
-Marca "1" -- "*" Bone : marca <
-Modelo "1" -- "*" Bone : modelo <
-Material "1" -- "*" Bone : material <
+class EstampaBordada {
+  - corLinha: String
+  - quantCores: Integer
+}
 
-' Composição (1-1)
-Bone "1" *-- "1" Estoque : estoque <
+class EstampaDigital {
+  - resolucao: String
+}
 
-' Agregação (N-N)
-Bone "*" o-- "*" Estampa : estampa <
+class Pedido {
+  - id: Long
+  - data: LocalDateTime
+}
 
-' =============================
-' NOTAS EXPLICATIVAS
-' =============================
-note top of Estoque
-  **COMPOSIÇÃO**: Se o Bone for excluído,
-  o Estoque também será excluído
-  (vida dependente)
-end note
+class ItemPedido {
+  - id: Long
+  - quantidade: Integer
+  - preco: Double
+  + getSubTotal(): Double
+}
 
-note right of Estampa
-  **AGREGAÇÃO**: Estampas podem existir
-  independentemente dos Bonés
-  (vida independente)
-end note
+class Usuario {
+  - id: Long
+  - nome: String
+  - login: String
+  - senha: String
+}
 
-note left of Marca
-  **ASSOCIAÇÃO 1-N**: Uma marca
-  pode ter vários modelos de boné
-end note
+class Endereco {
+  - id: Long
+  - cep: String
+  - logradouro: String
+  - numero: String
+}
+
+class Cidade {
+  - id: Long
+  - nome: String
+}
+
+class Estado {
+  - id: Long
+  - nome: String
+  - sigla: String
+}
+
+abstract class Pagamento {
+  - id: Long
+  - valor: Double
+  - data: LocalDateTime
+  - status: String
+}
+
+class Cartao {
+  - nomeTitular: String
+  - numero: String
+  - validade: String
+  - cvv: String
+}
+
+class Boleto {
+  - codigoBarras: String
+  - dataVencimento: LocalDate
+}
+
+class Pix {
+  - chave: String
+  - tipoChave: String
+}
+
+' =======================
+' HERANÇA
+' =======================
+Estampa <|-- EstampaBordada
+Estampa <|-- EstampaDigital
+
+Pagamento <|-- Cartao
+Pagamento <|-- Boleto
+Pagamento <|-- Pix
+
+' =======================
+' RELACIONAMENTOS COM ATRIBUTOS
+' =======================
+
+Bone "1" *-- "1" Estoque : estoque
+Bone "*" -- "1" Marca : marca
+Bone "*" -- "1" Material : material
+Bone "*" -- "1" Modelo : modelo
+Bone "*" -- "*" Estampa : estampas
+
+Pedido "1" *-- "*" ItemPedido : itens
+ItemPedido "*" -- "1" Bone : bone
+
+Pedido "*" -- "1" Usuario : usuario
+Pedido "*" o-- "1" Endereco : endereco
+
+Endereco "*" -- "1" Cidade : cidade
+Cidade "*" -- "1" Estado : estado
+
+Pedido "1" *-- "1" Pagamento : pagamento
+
+' =======================
+' DEPENDÊNCIA COM ENUMS
+' =======================
+
+Usuario ..> Perfil : perfil
+Bone ..> Bordado : bordado
 
 @enduml
