@@ -68,7 +68,11 @@ public class PedidoServiceImpl implements PedidoService {
         pedido.setUsuario(usuario);
 
         Endereco endereco = enderecoRepository.findById(dto.idEndereco());
-        pedido.setEndereco(endereco);
+        pedido.setCep(endereco.getCep());
+        pedido.setLogradouro(endereco.getLogradouro());
+        pedido.setNumero(endereco.getNumero());
+        pedido.setCidade(endereco.getCidade().getNome());
+        pedido.setEstado(endereco.getCidade().getEstado().getNome());
 
         List<ItemPedido> itens = dto.itens().stream()
                 .map(i -> criarItem(i, pedido))
@@ -97,9 +101,6 @@ public class PedidoServiceImpl implements PedidoService {
 
         Usuario usuario = usuarioRepository.findById(dto.idUsuario());
         pedido.setUsuario(usuario);
-
-        Endereco endereco = enderecoRepository.findById(dto.idEndereco());
-        pedido.setEndereco(endereco);
 
         pedido.getItens().clear();
 

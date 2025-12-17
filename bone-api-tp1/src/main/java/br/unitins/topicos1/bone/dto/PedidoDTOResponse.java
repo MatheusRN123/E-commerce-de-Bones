@@ -10,7 +10,11 @@ public record PedidoDTOResponse(
     Long id,
     LocalDateTime data,
     UsuarioDTOResponse idUsuario,
-    EnderecoDTOResponse endereco,
+    String cep,
+    String logradouro,
+    String numero,
+    String cidade,
+    String estado,
     PagamentoDTOResponse pagamento,
     List<ItemPedidoDTOResponse> itens,
     Double valorTotal
@@ -20,7 +24,11 @@ public record PedidoDTOResponse(
             pedido.getId(),
             pedido.getData(),
             UsuarioDTOResponse.valueOf(pedido.getUsuario()),
-            EnderecoDTOResponse.valueOf(pedido.getEndereco()),
+            pedido.getCep(),
+            pedido.getLogradouro(),
+            pedido.getNumero(),
+            pedido.getCidade(),
+            pedido.getEstado(),
             pedido.getPagamento() != null ? PagamentoDTOResponse.valueOf(pedido.getPagamento()) : null,
             pedido.getItens() != null
                 ? pedido.getItens().stream()

@@ -12,4 +12,5 @@ public interface UsuarioService {
     Usuario create(Usuario usuario);
     Usuario update(Long id, Usuario usuarioAtualizado);
     void delete(Long id);
+    Usuario promoverParaAdmin(Long id);
 }

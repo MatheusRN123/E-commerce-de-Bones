@@ -84,7 +84,6 @@ public class UsuarioResource {
     @POST
     @Path("/cadastro")
     @Transactional
-    @RolesAllowed({"ADM", "USER"})
     public Response cadastrarUsuario(UsuarioDTO dto) {
         LOG.infof("Requisição: cadastrar usuário '%s'", dto.login());
 
@@ -99,18 +98,17 @@ public class UsuarioResource {
         usuario.setNome(dto.nome());
         usuario.setLogin(dto.login());
         usuario.setSenha(hash);
-        usuario.setPerfil(dto.perfil());
 
         service.create(usuario);
 
-        return Response.status(Status.CREATED).build();
+        return Response.status(Status.CREATED).entity(usuario).build();
     }
 
 
     @PUT
     @Path("/{id}")
     @Transactional
-    @RolesAllowed("ADM")
+    @RolesAllowed({"ADM", "USER"})
     public Response atualizarUsuario(@PathParam("id") Long id, UsuarioDTO dto) {
         LOG.infof("Requisição: atualizar usuário com ID %d", id);
 
@@ -118,7 +116,6 @@ public class UsuarioResource {
         usuarioAtualizado.setNome(dto.nome());
         usuarioAtualizado.setLogin(dto.login());
         usuarioAtualizado.setSenha(dto.senha());
-        usuarioAtualizado.setPerfil(dto.perfil());
 
         Usuario atualizado = service.update(id, usuarioAtualizado);
 
@@ -133,7 +130,7 @@ public class UsuarioResource {
     @DELETE
     @Path("/{id}")
     @Transactional
-    @RolesAllowed("ADM")
+    @RolesAllowed({"ADM", "USER"})
     public Response deletarUsuario(@PathParam("id") Long id) {
         LOG.infof("Requisição: deletar usuário com ID %d", id);
 
@@ -145,5 +142,16 @@ public class UsuarioResource {
 
         service.delete(id);
         return Response.noContent().build();
+    }
+
+    @PUT
+    @Path("/{id}/promover")
+    @Transactional
+    @RolesAllowed("ADM")
+    public Response promoverUsuario(@PathParam("id") Long id) {
+        Usuario usuario = service.promoverParaAdmin(id);
+        if (usuario == null)
+            return Response.status(Response.Status.NOT_FOUND).build();
+        return Response.ok(usuario).build();
     }
 }

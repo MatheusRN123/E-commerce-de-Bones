@@ -59,9 +59,8 @@ INSERT INTO pagamento (valor, data, status) VALUES
 (200.0, '2025-12-04 10:40:00', 'PENDENTE'),
 (150.0, '2025-12-04 10:45:00', 'PAGO');
 
-INSERT INTO pedido (data, id_usuario, id_endereco, id_pagamento) VALUES
-('2025-12-04 10:30:00', 1, 1, 1),
-('2025-12-04 11:00:00', 2, 2, 2);
+INSERT INTO pedido ( data, id_usuario, cep, logradouro, numero, cidade, estado, id_pagamento) 
+VALUES ('2025-12-04 10:30:00', 1, '01001-000', 'Av. Paulista', '1000', 'São Paulo', 'SP', 1), ('2025-12-04 11:00:00', 2, '13010-000', 'Rua Boa Vista', '500', 'Campinas', 'SP', 2);
 
 INSERT INTO pix (id, chave, tipo_chave) VALUES
 (1, '12345678900', 'CPF');

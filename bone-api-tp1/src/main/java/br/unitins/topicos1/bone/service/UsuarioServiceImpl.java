@@ -2,6 +2,7 @@ package br.unitins.topicos1.bone.service;
 
 import java.util.List;
 
+import br.unitins.topicos1.bone.model.Perfil;
 import br.unitins.topicos1.bone.model.Usuario;
 import br.unitins.topicos1.bone.repository.UsuarioRepository;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -75,18 +76,20 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public Usuario create(Usuario usuario) {
-        LOG.infof("Criando usuário: %s", usuario.   getLogin());
+        LOG.infof("Criando usuário: %s", usuario.getLogin());
 
         try {
-            String hash = hashService.getHashSenha(usuario. getSenha());
+            String hash = hashService.getHashSenha(usuario.getSenha());
             usuario.setSenha(hash);
         } catch (Exception e) {
-            LOG.error("Erro ao gerar hash da senha ao   criar usuário", e);
+            LOG.error("Erro ao gerar hash da senha ao criar usuário", e);
             return null;
         }
+    
+        usuario.setPerfil(Perfil.USER);
 
         repository.persist(usuario);
-        LOG.infof("Usuário '%s' salvo com sucesso",     usuario.getLogin());
+        LOG.infof("Usuário '%s' salvo com sucesso com perfil padrão", usuario.getLogin());
 
         return usuario;
     }
@@ -127,15 +130,27 @@ public class UsuarioServiceImpl implements UsuarioService {
                 LOG.error("Erro ao gerar hash da nova   senha", e);
             }
         }
-
-        if (usuarioAtualizado.getPerfil() != null){
-            usuario.setPerfil(usuarioAtualizado.getPerfil());
-        }
     
         repository.persist(usuario);
 
         LOG.infof("Usuário com ID %d atualizado com     sucesso.", id);
 
+        return usuario;
+    }
+
+    public Usuario promoverParaAdmin(Long id) {
+        LOG.infof("Promovendo usuário ID %d para ADMIN", id);
+        
+        Usuario usuario = repository.findById(id);
+        if (usuario == null) {
+            LOG.warnf("Usuário com ID %d não encontrado", id);
+            return null;
+        }
+    
+        usuario.setPerfil(Perfil.ADM);
+        repository.persist(usuario);
+    
+        LOG.infof("Usuário ID %d promovido a ADMIN com sucesso", id);
         return usuario;
     }
 }
