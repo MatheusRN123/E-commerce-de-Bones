@@ -8,6 +8,7 @@ import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -27,7 +28,7 @@ public class EstoqueResource {
     @GET
     @Path("/{id}/disponibilidade")
     @RolesAllowed("ADM")
-    public Response verificarDisponibilidade(Long id) {
+    public Response verificarDisponibilidade(@PathParam("id") Long id) {
         LOG.infof("Requisição para verificar disponibilidade do estoque ID: %d", id);
         try {
             var disponivel = service.verificarDisponibilidade(id);
@@ -42,7 +43,7 @@ public class EstoqueResource {
     @PUT
     @Path("/{id}/quantidade")
     @RolesAllowed("ADM")
-    public Response atualizarQuantidade(Long id, EstoqueDTO dto) {
+    public Response atualizarQuantidade(@PathParam("id") Long id, EstoqueDTO dto) {
         LOG.infof("Requisição para atualizar quantidade do estoque ID: %d", id);
         try {
             service.atualizarQuantidade(id, dto);
@@ -55,9 +56,9 @@ public class EstoqueResource {
     }
 
     @PUT
-    @Path("/{id}/adicionar/adicionar")
+    @Path("/{id}/adicionar")
     @RolesAllowed("ADM")
-    public Response adicionarQuantidade(Long id, EstoqueDTO dto) {
+    public Response adicionarQuantidade(@PathParam("id") Long id, EstoqueDTO dto) {
         LOG.infof("Requisição para adicionar quantidade ao estoque ID: %d", id);
         try {
             service.adicionarQuantidade(id, dto);
